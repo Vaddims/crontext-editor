@@ -1,14 +1,22 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
-import { contextBridge, ipcRenderer, IpcRendererEvent } from 'electron';
+import { contextBridge, ipcRenderer, IpcRendererEvent, Menu } from 'electron';
 
-export type Channels = 'ipc-example';
+export type Channels = 'wride-json' | '';
 
 const electronHandler = {
   ipcRenderer: {
-    sendMessage(channel: Channels, ...args: unknown[]) {
-      ipcRenderer.send(channel, ...args);
+    readJson(path: string) {
+      return ipcRenderer.invoke('read-json', path);
     },
+    writeJson(path: string, dataObjectString: string) {
+      return ipcRenderer.invoke('write-json', path, dataObjectString);
+    },
+
+    async openSIRContextMenu() {
+      return await ipcRenderer.invoke('open-sir-context-menu');
+    },
+
     on(channel: Channels, func: (...args: unknown[]) => void) {
       const subscription = (_event: IpcRendererEvent, ...args: unknown[]) =>
         func(...args);

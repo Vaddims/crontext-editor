@@ -1,0 +1,27 @@
+@use 'src/renderer/App.scss';
+
+.scene-inspector {
+  grid-area: scene-inspector;
+  background-color: App.$primary-color;
+  outline: none;
+  display: flex;
+  flex-direction: column;
+
+  & > header {
+    padding: .5rem 1rem;
+    border-bottom: .1rem solid App.$secondary-color;
+    margin-bottom: .2rem;
+
+    h3 {
+      color: App.$text-color;
+    }
+  }
+
+  & > .items {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    box-sizing: border-box;
+    height: 100%;
+  }
+}

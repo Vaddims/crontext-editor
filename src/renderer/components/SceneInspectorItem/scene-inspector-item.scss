@@ -1,0 +1,78 @@
+@use 'src/renderer/App.scss';
+
+.scene-inspector-item {
+  margin-block: -.1rem;
+  background-color: App.$primary-color;
+  // padding: .1rem;
+  padding-block: .3rem;
+  padding-right: 1rem;
+  z-index: 1;
+  overflow: hidden;
+
+  &[aria-hidden=true] {
+    display: none;
+  }
+
+  .collapse-action {
+    width: 1rem;
+    height: 1rem;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    &[aria-hidden=true] {
+      visibility: hidden;
+      cursor: default;
+    }
+
+    &[aria-orientation="vertical"] .collapse-icon {
+      transform: rotate(90deg);
+    }
+
+    .collapse-icon {
+      transition: transform .25s ease;
+      
+      path {
+        fill: App.$text-color;
+      }
+    }
+  }
+
+  .entity-name-input {
+    $horizontalPadding: .3rem;
+
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    background-color: transparent;
+    padding: .1rem .2rem;
+    box-sizing: border-box;
+    border: none;
+    color: App.$text-color;
+    font-size: 1rem;
+    user-select: none;
+    outline: none;
+    overflow: hidden;
+    border-radius: .25rem;
+    padding: .1rem $horizontalPadding;
+  }
+
+  &[draggable=false] {
+    .entity-name-input {
+      background-color: App.$primary-color;
+    }
+  }
+
+  &[aria-selected=true] {
+    background-color: App.$accent-color;
+    z-index: 10;
+  }
+
+  &[aria-selected=false]:hover {
+    background-color: App.$secondary-color;
+    z-index: 5;
+  }
+}

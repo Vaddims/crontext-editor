@@ -9,11 +9,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
+import { openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
 
 class AppUpdater {
   constructor() {
@@ -75,6 +76,10 @@ const createWindow = async () => {
     height: 728,
     icon: getAssetPath('icon.png'),
     webPreferences: {
+      nodeIntegration: true,
+      // contextIsolation: false,
+      nodeIntegrationInWorker: true,
+      nodeIntegrationInSubFrames: true,
       preload: app.isPackaged
         ? path.join(__dirname, 'preload.js')
         : path.join(__dirname, '../../.erb/dll/preload.js'),
@@ -83,6 +88,8 @@ const createWindow = async () => {
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
 
+  mainWindow.showInactive()
+
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
       throw new Error('"mainWindow" is not defined');
@@ -90,7 +97,7 @@ const createWindow = async () => {
     if (process.env.START_MINIMIZED) {
       mainWindow.minimize();
     } else {
-      mainWindow.show();
+      // mainWindow.show()
     }
   });
 
@@ -127,6 +134,10 @@ app.on('window-all-closed', () => {
 app
   .whenReady()
   .then(() => {
+    ipcMain.handle('read-json', (event, path) => readJson(path));
+    ipcMain.handle('write-json', (event, path, data) => writeJson(path, data));
+    ipcMain.handle('open-sir-context-menu', (event) => openSimulationInspectorRendererContextMenu(mainWindow!));
+
     createWindow();
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
