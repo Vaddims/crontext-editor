@@ -1,6 +1,8 @@
 import { useState } from "react"
 
 export const useComponentForceRerender = () => {
-  const [, setState] = useState(false);
-  return () => setState(previousValue => !previousValue);
+  const [state, setState] = useState(false);
+  const rerender = () => setState(previousValue => !previousValue);
+  (rerender as any).state = state;
+  return rerender;
 }

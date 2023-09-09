@@ -6,6 +6,7 @@ import { useSimulationInspectorRenderer } from 'renderer/middleware/hooks/useSim
 import { Objectra } from 'objectra';
 import SceneInspector from 'renderer/components/SceneInspector';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
+import Inspector from 'renderer/components/Inspector';
 
 export interface EditorContextState {
   simulation: Simulation;
@@ -55,6 +56,10 @@ const Editor: React.FC = () => {
         forceRerender();
       }
 
+      setTimeout(() => {
+        simulationInspectorRenderer?.inspector.selectEntities([simulationRenderer!.simulation.scene.getEntities()[0]])
+      }, 200)
+
       simulationInspectorRenderer.inspector.addInspectEntityChangeListener(listener);
       return () => simulationInspectorRenderer.inspector.removeInspectEntityChangeListener(listener);
     }
@@ -72,6 +77,7 @@ const Editor: React.FC = () => {
           forceRerender,
         }}>
           <SceneInspector />
+          <Inspector />
         </EditorContext.Provider>
       )}
     </main>

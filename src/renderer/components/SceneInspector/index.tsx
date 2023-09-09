@@ -3,6 +3,7 @@ import { EditorContext } from 'renderer/pages/Editor';
 import './scene-inspector.scss';
 import SceneInspectorItem from '../SceneInspectorItem';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
+import { Entity } from 'crontext';
 
 const SceneInspector = () => {
   const editorContext = useContext(EditorContext);
@@ -18,6 +19,18 @@ const SceneInspector = () => {
 
   useEffect(() => {
     setTimeout(() => forceRerender(), 200)
+  }, []);
+
+  useEffect(() => {
+    if (!editorContext.simulationInspectorRenderer) {
+      return;
+    }
+
+    const handler = (entities: Set<Entity>) => {
+      forceRerender()
+    }
+    editorContext.simulationInspectorRenderer.inspector.addInspectEntityChangeListener(handler);
+    return () => editorContext.simulationInspectorRenderer.inspector.removeInspectEntityChangeListener(handler);
   }, []);
 
   const handleSceneInspectorClick: React.MouseEventHandler<HTMLElement> = () => {

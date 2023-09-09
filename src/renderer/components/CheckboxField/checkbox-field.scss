@@ -1,0 +1,63 @@
+@use "/src/renderer/App.scss";
+
+.checkbox-field {
+  display: flex;
+  width: fit-content;
+  align-items: center;
+  vertical-align: middle;
+  gap: .5rem;
+
+  .label {
+    text-transform: uppercase;
+    color: rgb(198, 198, 198);
+  }
+
+  .checkbox {
+    height: 1.75rem;
+    width: 1.75rem;
+    background-color: App.$primary-color;
+    outline: none;
+    border: none;
+    border-radius: .5rem;
+    aspect-ratio: 1;
+    border: .1rem solid rgb(150, 150, 150);
+
+    .checkbox-icon {
+      display: none;
+    }
+  }
+
+  // &[aria-selected=true] {
+  //   .checkbox .checkbox-icon {
+  //     visibility: visible;
+  //   }
+  // }
+
+  &[aria-current=false][aria-selected=true] {
+    .checkbox .checkbox-icon.tick {
+      display: inline-block;
+      
+      path {
+        fill: white;
+      }
+    }
+
+    .checkbox .checkbox-icon.mixed-values {
+      display: none;
+    }
+  }
+
+  &[aria-current=true] {
+    .checkbox .checkbox-icon.tick {
+      display: none;
+    }
+
+    .checkbox .checkbox-icon.mixed-values {
+      display: inline-block;
+      
+      path {
+        fill: App.$accent-color;
+      }
+    }
+  }
+}

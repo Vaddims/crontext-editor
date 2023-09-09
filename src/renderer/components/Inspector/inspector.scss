@@ -1,0 +1,76 @@
+@use "/src/renderer/App.scss";
+
+.inspector {
+  grid-area: inspector;
+  background-color: App.$primary-color;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  box-sizing: border-box;
+
+  & > header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    display: grid;
+    grid-template-areas: 
+    'icon enable-entity-checkmark name-field name-field name-field'
+    'icon tag-field tag-field layer-field layer-field';
+
+    grid-template-columns: 3rem min-content 1fr .5fr 1fr;
+    grid-template-rows: 1.75rem 1.75rem;
+
+    padding: .5rem;
+    gap: .5rem;
+    box-sizing: border-box;
+
+    border-bottom: .1rem solid App.$secondary-color;
+
+
+    .entity-icon {
+      grid-area: icon;
+      height: auto;
+      aspect-ratio: 1;
+      justify-self: center;
+      align-self: center;
+      // padding: .5rem;
+    }
+
+    .enable-entity-checkbox {
+      grid-area: enable-entity-checkmark;
+    }
+
+    .entity-name-field {
+      grid-area: name-field;
+    }
+
+    .entity-tag-field {
+      grid-area: tag-field;
+    }
+
+    .entity-layer-field {
+      grid-area: layer-field;
+    }
+  }
+
+  & > main {
+    display: flex;
+    flex-direction: column;
+    // justify-content: center;
+    align-items: center;
+
+    & > section {
+      width: 100%;
+    }
+  }
+
+  .add-component-action {
+    background-color: transparent;
+    border: none;
+    border: .1rem solid App.$accent-color;
+    font-size: 1rem;
+    padding: .2rem .5rem;
+    color: App.$accent-color;
+    border-radius: .5rem;
+    margin-top: 1rem;
+  }
+}

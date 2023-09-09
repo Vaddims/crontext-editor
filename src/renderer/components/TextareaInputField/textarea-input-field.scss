@@ -1,0 +1,25 @@
+.textarea-input-field {
+  &[data-mixed-values=true] {
+    textarea::placeholder {
+      color: var(--background-highlight-color) !important;
+    }
+  }
+
+  textarea {
+    width: 100%;
+    height: 5rem;
+    outline: none;
+    resize: none;
+    padding: .5rem;
+    border: none;
+    background-color: transparent;
+    font-size: large;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
+
+    &::-webkit-outer-spin-button,
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+  }
+}

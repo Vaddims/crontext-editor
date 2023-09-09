@@ -1,0 +1,204 @@
+@use '/src/renderer/App.scss';
+
+label.input-field {
+  border: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background-color: transparent;
+
+  &.t {
+    .input-section {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+      border-top: .1rem solid #9696963d;
+    }
+
+    &:focus-within {
+      .input-section {
+        border-top: .1rem solid App.$accent-color;
+      }
+    }
+  }
+
+  &.r {
+    .input-section {
+      border-top-right-radius: 0;
+      border-bottom-right-radius: 0;
+      border-right: .1rem solid #9696963d;
+    }
+
+    &:focus-within {
+      .input-section {
+        border-right: .1rem solid App.$accent-color;
+      }
+    }
+  }
+
+  &.l {
+    .input-section {
+      border-top-left-radius: 0;
+      border-bottom-left-radius: 0;
+      border-left: .1rem solid #9696963d;
+    }
+
+    &:focus-within {
+      .input-section {
+        border-left: .1rem solid App.$accent-color;
+      }
+    }
+  }
+
+  &.b {
+    .input-section {
+      border-bottom-left-radius: 0;
+      border-bottom-right-radius: 0;
+      border-bottom: .1rem solid #9696963d;
+    }
+
+    &:focus-within {
+      .input-section {
+        border-bottom: .1rem solid App.$accent-color;
+      }
+    }
+  }
+
+  header {
+    padding: 0 .5rem;
+    margin-bottom: .4rem;
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+
+    .label-icon {
+      path {
+        fill: rgb(198, 198, 198);
+      }
+    }
+
+    label {
+      span {
+        color: rgb(198, 198, 198);
+      }
+
+      .label-title {
+        text-transform: uppercase;
+      }
+
+      .optional-label {
+        font-style: italic;
+      }
+    }
+  }
+
+  .input-section {
+    background-color: App.$primary-color;
+    align-items: stretch;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    min-height: 1.75rem;
+    height: fit-content;
+
+    transition: border .25s ease;
+    border: .1rem solid rgb(150, 150, 150);
+    border-radius: .5rem;
+    padding: 0;
+    overflow: hidden;
+
+    .input-icon-wrapper {
+      display: flex;
+      align-items: center;
+
+      .text {
+        white-space: nowrap;
+        margin-left: .5rem;
+      }
+
+      .input-icon {
+        margin-left: .75rem;
+
+        path {
+          transition: fill .25s ease;
+          fill: rgb(150, 150, 150);
+        }
+      }
+    }
+
+    .input-management-actions {
+      position: relative;
+      display: flex;
+      flex-direction: row;
+
+      &:empty {
+        display: none;
+      }
+
+      button {
+        padding: 0 .5rem;
+        background-color: transparent;
+        border: none;
+        cursor: pointer;
+      }
+    }
+
+    &:hover {
+      border: .1rem solid rgb(190, 190, 190);
+
+      .input-management-actions:not(:empty) {
+        display: flex;
+      }
+
+      .input-icon {  
+        display: block;
+
+        path {
+          fill: rgb(190, 190, 190);
+        }
+      }
+    }
+
+    &:focus-within {
+      border: .1rem solid App.$accent-color;
+    }
+
+    .action-icon {
+      &.mixed-value-state {
+        &[aria-checked=true] path {
+          fill: App.$accent-color;
+        }
+      }
+
+      path {
+        fill: rgb(198, 198, 198);
+      }
+    }
+  }
+
+  &[data-status=error] {
+    .input-section {
+      border: .1rem solid rgb(225, 40, 50);
+
+      & + .helper-text {
+        color: rgb(225, 40, 50);
+      }
+    }
+  }
+
+  &[data-status=warn] {
+    border: .1rem solid rgb(255, 153, 51);
+
+    & + .helper-text {
+      color: rgb(255, 153, 51);
+    }
+  }
+
+  .helper-text {
+    color: rgb(198, 198, 198);
+    margin-top: .5rem;
+    padding: 0 .5rem;
+    font-size: .85rem;
+  }
+}

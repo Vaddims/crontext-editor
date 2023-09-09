@@ -18,6 +18,7 @@ const SceneInspectorItem = (props: SceneInspectorItemProps) => {
   const editorContext = useContext(EditorContext);
   const [ useNameChanger, setNameChangerStatus ] = useState(false)
   const [ childrenShouldCollapse, setChildrenShouldCollapse ] = useState(false);
+  const forceRerender = useComponentForceRerender();
 
   const scene = editorContext.simulation.scene;
 
@@ -59,6 +60,8 @@ const SceneInspectorItem = (props: SceneInspectorItemProps) => {
         }
       }
     }
+
+    forceRerender()
   }
 
   useEffect(() => {
@@ -148,6 +151,7 @@ const SceneInspectorItem = (props: SceneInspectorItemProps) => {
         onDoubleClick={handleInspectorItemDoubleClick}
         draggable={!useNameChanger}
       >
+        {(forceRerender as any).state}
         <button 
           className="collapse-action"
           aria-hidden={entity.getChildren().length === 0}  
@@ -158,10 +162,11 @@ const SceneInspectorItem = (props: SceneInspectorItemProps) => {
           <FontAwesomeIcon icon={faAngleRight} className="collapse-icon" />
         </button>
         <input
+          data-state={(forceRerender as any).state}
           className="entity-name-input" 
           ref={handleEntityNameReferenceReceive}
           onChange={handleEntityNameChange}
-          value={entity.name} 
+          value={entity.name}
           style={entityNameInputStyle}
           disabled={!useNameChanger}
         />

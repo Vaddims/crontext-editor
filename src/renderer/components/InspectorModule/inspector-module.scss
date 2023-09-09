@@ -1,0 +1,56 @@
+@use "/src/renderer/App.scss";
+
+.inspector-module {
+  border-bottom: .1rem solid App.$secondary-color;
+
+  & > header {
+    display: grid;
+    grid-template-columns: 1rem 1rem 1fr;
+    gap: .5rem;
+    padding: .5rem;
+    grid-template-areas: 'collapse-action icon name';
+
+    .icon {
+      justify-self: center;
+      align-self: center;
+      grid-area: icon;
+    }
+
+    .collapse-action {
+      justify-self: center;
+      align-self: center;
+      grid-area: collapse-action;
+      transform: rotate(90deg);
+    }
+
+    .name {
+      grid-area: name;
+      font-weight: 700;
+      align-self: center;
+    }
+  }
+
+  & > main {
+    display: grid;
+    grid-template-columns: auto auto;
+    column-gap: 1fr;
+    padding: .5rem;
+    padding-left: 2rem;
+    column-gap: 1rem;
+    row-gap: .5rem;
+    justify-content: space-between;
+
+    &:empty {
+      display: none;
+    }
+
+    .key {
+      justify-content: center;
+      align-self: center;
+    }
+
+    .data {
+      justify-content: flex-end;
+    }
+  }
+}

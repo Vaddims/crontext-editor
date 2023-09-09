@@ -6,12 +6,13 @@
 
   display: grid;
   grid-template-areas: 
-  'scene-inspector simulation-renderer x'
-  'scene-inspector simulation-inspector-renderer x'
-  'a a x';
+  'x x x'
+  'scene-inspector simulation-renderer inspector'
+  'scene-inspector simulation-inspector-renderer inspector'
+  'a a a';
 
   grid-template-columns: 20rem auto 1fr;
-  grid-template-rows: auto auto 1fr;
+  grid-template-rows: 1fr auto auto 1fr;
 
   .renderer {
     nav {

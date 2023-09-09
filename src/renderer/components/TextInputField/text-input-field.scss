@@ -1,0 +1,162 @@
+@use '/src/renderer/App.scss';
+
+.text-input-field {
+  border: none;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+
+  &[data-mixed-values=true] {
+    input::placeholder {
+      color: App.$accent-color;
+    }
+  }
+
+  header {
+    padding: 0 .5rem;
+    margin-bottom: .4rem;
+    display: flex;
+    flex-direction: row;
+    gap: .5rem;
+
+    .label-icon {
+      path {
+        fill: rgb(198, 198, 198);
+      }
+    }
+
+    label {
+      span {
+        color: rgb(198, 198, 198);
+      }
+
+      .field-label {
+        text-transform: uppercase;
+      }
+
+      .optional-field-label {
+        font-style: italic;
+      }
+    }
+  }
+
+  .input-section {
+    background-color: App.$primary-color;
+    align-items: stretch;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    box-sizing: border-box;
+    height: 1.5rem;
+    // height: 2rem;
+
+    transition: border .25s ease;
+    border: .1rem solid rgb(150, 150, 150);
+    border-radius: .5rem;
+    padding: 0;
+    overflow: hidden;
+
+    .input-icon-wrapper {
+      display: flex;
+      align-items: center;
+
+      .input-icon {
+        margin-left: .75rem;
+
+        path {
+          transition: fill .25s ease;
+          fill: rgb(150, 150, 150);
+        }
+      }
+    }
+
+    &:hover {
+      border: .1rem solid rgb(190, 190, 190);
+
+      .input-management-actions {
+        display: flex;
+      }
+
+      .input-icon {  
+        display: block;
+
+        path {
+          fill: rgb(190, 190, 190);
+        }
+      }
+    }
+
+    &:focus-within {
+      border: .1rem solid App.$accent-color;
+    }
+
+    &.warn {
+      border: .1rem solid rgb(255, 153, 51);
+
+      & + .input-helper-text {
+        color: rgb(255, 153, 51);
+      }
+    }
+
+    &.invalid {
+      border: .1rem solid rgb(225, 40, 50);
+
+      & + .input-helper-text {
+        color: rgb(225, 40, 50);
+      }
+    }
+
+    input {
+      width: 100%;
+      color: white;
+      background-color: transparent;
+      outline: none;
+      padding: 0 .5rem;
+      height: 100%;
+      background-color: red;
+      border: none;
+      position: relative;
+      border: none;
+      background-color: transparent;
+      font-size: medium;
+      text-overflow: ellipsis;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      &[type=number] {
+        appearance: textfield;
+      }
+      
+      &[type=datetime-local]::-webkit-calendar-picker-indicator {
+        color: transparent;
+        background: none;
+        cursor: pointer;
+        position: absolute;
+        background-color: transparent;
+        height: 100%;
+        width: 100%;
+      }
+
+      &:disabled {
+        cursor: not-allowed;
+        color: grey !important;
+      }
+    }
+
+    .action-icon path {
+      fill: rgb(198, 198, 198);
+    }
+  }
+
+  .input-helper-text {
+    color: rgb(198, 198, 198);
+    margin-top: .5rem;
+    padding: 0 .5rem;
+    font-size: .85rem;
+  }
+}
