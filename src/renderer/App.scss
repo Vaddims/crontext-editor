@@ -1,10 +1,16 @@
-// _app.scss
-
-$background-color: rgba(20, 20, 50);
-$primary-color: rgb(50, 50, 80);
-$secondary-color: rgba(70, 70, 90);
+$background-color: rgb(10, 10, 20);
+$primary-color: rgb(30, 30, 50);
+$secondary-color: rgba(50, 50, 70);
 $accent-color: rgb(0, 150, 255);
 $text-color: rgb(200, 200, 200);
+
+$input-field-text-color: white;
+$input-field-border-color: rgb(150, 150, 150);
+$input-field-hover-border-color: rgb(190, 190, 190);
+
+$error-color: rgb(225, 40, 50);
+$warn-color: rgb(255, 153, 51);
+
 
 * {
   margin: 0;
@@ -19,6 +25,10 @@ $text-color: rgb(200, 200, 200);
       fill: $text-color;
     }
   }
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 html, body, #root {
@@ -29,4 +39,3 @@ html, body, #root {
 #root {
   background-color: $background-color;
 }
-

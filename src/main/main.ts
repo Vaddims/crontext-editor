@@ -14,7 +14,7 @@ import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
+import { openComponentInspectEditorContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
 
 class AppUpdater {
   constructor() {
@@ -137,6 +137,7 @@ app
     ipcMain.handle('read-json', (event, path) => readJson(path));
     ipcMain.handle('write-json', (event, path, data) => writeJson(path, data));
     ipcMain.handle('open-sir-context-menu', (event) => openSimulationInspectorRendererContextMenu(mainWindow!));
+    ipcMain.handle('open-cie-context-menu', (event) => openComponentInspectEditorContextMenu(mainWindow!));
 
     createWindow();
     app.on('activate', () => {

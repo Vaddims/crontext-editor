@@ -1,17 +1,22 @@
-import InputField, { InputFieldCommonProps, extractInputFieldProps } from "../InputField";
+
+import { composeClassNames } from 'renderer/utilities/reactComponent.util';
+import InputField, { InputFieldCommonProps } from '../inputField/InputField';
 import './textarea-input-field.scss';
 
-interface TextareaInputFieldProps extends InputFieldCommonProps, React.DetailedHTMLProps<React.TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement> {
+interface TextareaInputFieldProps extends InputFieldCommonProps {
+  inputProps?: React.DetailedHTMLProps<React.TextareaHTMLAttributes<HTMLTextAreaElement>, HTMLTextAreaElement>;
   children?: React.ReactNode;
 }
 
 const TextareaField: React.FC<TextareaInputFieldProps> = (props) => {
   return (
     <InputField
-      {...extractInputFieldProps(props)}
-      className="textarea-input-field"
+      fieldProps={{
+        ...props.fieldProps,
+        className: composeClassNames("textarea-input-field", props.fieldProps?.className)
+      }}
     >
-      <textarea {...props} />
+      <textarea {...props.inputProps} />
     </InputField>
   )
 }

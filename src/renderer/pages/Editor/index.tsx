@@ -57,7 +57,12 @@ const Editor: React.FC = () => {
       }
 
       setTimeout(() => {
-        simulationInspectorRenderer?.inspector.selectEntities([simulationRenderer!.simulation.scene.getEntities()[0]])
+        const firstEntity = simulationRenderer!.simulation.scene.getEntities()[0];
+        if (!firstEntity) {
+          return;
+        }
+
+        simulationInspectorRenderer?.inspector.selectEntities([firstEntity])
       }, 200)
 
       simulationInspectorRenderer.inspector.addInspectEntityChangeListener(listener);
@@ -69,7 +74,7 @@ const Editor: React.FC = () => {
     <main className='editor'>
       {renderSimulation()}
       {renderSimulationInspector()}
-      {!simulationRendererIsLoading && !simulationInspectorRendererIsLoading && (
+      {simulationRenderer && simulationInspectorRenderer && (
         <EditorContext.Provider value={{
           simulationRenderer: simulationRenderer,
           simulation: simulationRenderer.simulation,

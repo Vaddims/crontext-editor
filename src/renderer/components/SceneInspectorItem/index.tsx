@@ -151,7 +151,6 @@ const SceneInspectorItem = (props: SceneInspectorItemProps) => {
         onDoubleClick={handleInspectorItemDoubleClick}
         draggable={!useNameChanger}
       >
-        {(forceRerender as any).state}
         <button 
           className="collapse-action"
           aria-hidden={entity.getChildren().length === 0}  

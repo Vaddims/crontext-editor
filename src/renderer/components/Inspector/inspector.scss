@@ -6,6 +6,11 @@
   display: grid;
   grid-template-rows: auto 1fr;
   box-sizing: border-box;
+  padding: 0;
+  // height: 1fr;
+  max-height: fit-content;
+  overflow: scroll;
+  scrollbar-width: none;
 
   & > header {
     width: 100%;
@@ -15,6 +20,11 @@
     grid-template-areas: 
     'icon enable-entity-checkmark name-field name-field name-field'
     'icon tag-field tag-field layer-field layer-field';
+    z-index: 200;
+    top: 0;
+    position: sticky;
+    background-color: App.$primary-color;
+    box-shadow: 0px 0px 30px -10px black;
 
     grid-template-columns: 3rem min-content 1fr .5fr 1fr;
     grid-template-rows: 1.75rem 1.75rem;
@@ -32,7 +42,7 @@
       aspect-ratio: 1;
       justify-self: center;
       align-self: center;
-      // padding: .5rem;
+      padding: .5rem;
     }
 
     .enable-entity-checkbox {
@@ -64,13 +74,70 @@
   }
 
   .add-component-action {
+    cursor: pointer;
     background-color: transparent;
     border: none;
     border: .1rem solid App.$accent-color;
     font-size: 1rem;
+    width: 15rem;
     padding: .2rem .5rem;
     color: App.$accent-color;
     border-radius: .5rem;
-    margin-top: 1rem;
+    margin: 1rem;
+    transition: background-color .25s ease, color .25s ease;
+
+    &[aria-hidden=true] {
+      display: none;
+    }
+
+    &:hover {
+      background-color: App.$accent-color;
+      color: App.$text-color;
+    }
+  }
+
+  .component-management {
+    width: 70%;
+    width: 15rem;
+    margin: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+
+    &[aria-hidden=true] {
+      display: none;
+    }
+
+    & > .component-viewer {
+      border: .1rem solid App.$secondary-color;
+      border-radius: .5rem;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+
+      & > .component-viewer-item {
+        display: flex;
+        flex-direction: row;
+        gap: .5rem;
+        padding-inline: .5rem;
+        padding-block: .4rem;
+
+        border-radius: .5rem;
+        cursor: pointer;
+
+        &:hover {
+          background-color: App.$accent-color;
+        }
+      }
+
+      .empty-text-wrapper {
+        padding-inline: .5rem;
+        padding-block: .4rem;
+
+        span {
+          color: grey;
+        }
+      }
+    }
   }
 }

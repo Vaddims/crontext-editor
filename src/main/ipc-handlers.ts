@@ -2,6 +2,7 @@ import path from 'path';
 import * as fs from 'fs/promises';
 import { BrowserWindow, Menu } from 'electron';
 import { createSimulationInspectorMenuTemplate } from './menus/simulation-inspector.menu';
+import { createComponentInspectorEditorMenuTemplate } from './menus/component-inspector-editor.menu';
 
 const createJSONFilePath = (fileName: string) => path.join(__dirname, '../../temp', fileName + '.json');
 
@@ -37,4 +38,14 @@ export const openSimulationInspectorRendererContextMenu = async (win: BrowserWin
       setTimeout(() => resolve(null))
     })
   });
+}
+
+export const openComponentInspectEditorContextMenu = async (win: BrowserWindow) => {
+  return await new Promise((resolve) => {
+    const menu = Menu.buildFromTemplate(createComponentInspectorEditorMenuTemplate((menuItem) => resolve(menuItem.id)));
+    menu.popup({ window: win })
+    menu.addListener('menu-will-close', () => {
+      setTimeout(() => resolve(null))
+    })
+  })
 }

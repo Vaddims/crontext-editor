@@ -77,6 +77,15 @@ export const useSimulationInspectorRenderer = (simulation: Simulation | null): E
           
           const obj = Objectra.from(renderer.simulation.scene);
           const model = obj.toModel();
+
+          try {
+            Objectra.fromModel(model).compose();
+          } catch (error) {
+            const message = error instanceof Error ? error.message : error;
+            alert(`Objectra could not reinstantiate primitive model. For safety scene will not be saved.\n${message}`)
+            return;
+          }
+
           await window.electron.ipcRenderer.writeJson('scene', JSON.stringify(model))
         }}>
             Save scene

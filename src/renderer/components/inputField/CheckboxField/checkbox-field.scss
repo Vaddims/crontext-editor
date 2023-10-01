@@ -1,0 +1,71 @@
+@use '/src/renderer/App.scss';
+
+.checkbox-field {
+  align-items: start;
+  display: grid;
+  grid-template-areas: 'checkbox label' 'checkbox helpertext';
+  grid-template-columns: min-content auto;
+  grid-template-rows: min-content auto;
+  column-gap: 1rem;
+  row-gap: .25rem;
+
+  &[data-label-only=true] {
+    grid-template-areas: 'checkbox label';
+    grid-template-rows: auto;
+    align-items: center;
+  }
+
+  .label {
+    color: rgb(198, 198, 198);
+    grid-area: label;
+    font-weight: 500;
+    font-size: 1.1rem;
+  }
+
+  .helper-text {
+    grid-area: helpertext;
+    font-size: 0.9rem;
+    color: grey;
+  }
+
+  .checkbox {
+    min-width: max-content;
+    width: 1.75rem;
+    min-height: fit-content;
+    background-color: App.$background-color;
+    outline: none;
+    border: none;
+    border-radius: .5rem;
+    aspect-ratio: 1;
+    border: .1rem solid rgb(150, 150, 150);
+    grid-area: checkbox;
+
+    .checkbox-icon {
+      display: none;
+    }
+  }
+
+  &[aria-current=false][aria-selected=true] {
+    .checkbox .checkbox-icon.tick {
+      display: inline-block;
+    }
+
+    .checkbox .checkbox-icon.mixed-values {
+      display: none;
+    }
+  }
+
+  &[aria-current=true] {
+    .checkbox .checkbox-icon.tick {
+      display: none;
+    }
+
+    .checkbox .checkbox-icon.mixed-values {
+      display: inline-block;
+      
+      path {
+        fill: var(--background-highlight-color);
+      }
+    }
+  }
+}

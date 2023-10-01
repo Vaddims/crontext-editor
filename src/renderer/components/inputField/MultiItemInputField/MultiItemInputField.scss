@@ -1,0 +1,50 @@
+@use '/src/renderer/App.scss';
+
+.input-field.multi-item {
+  .display-field {
+    display: flex;
+    flex-direction: row;
+    padding: .5rem;
+    flex-wrap: wrap;
+    width: 100%;
+    gap: .5rem;
+
+    & > .input-item {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: nowrap;
+      gap: .5rem;
+      background-color: App.$secondary-color;
+      padding: .2rem .5rem;
+      border-radius: .25rem;
+      align-items: center;
+      justify-content: center;
+
+      & > span {
+        font-weight: 600;
+      }
+
+      & > svg {
+        cursor: pointer;
+      }
+    }
+
+    & > input {
+      background-color: transparent;
+      color: App.$input-field-text-color;
+      outline: none;
+      padding: .2rem .5rem;
+      background: none;
+      font-size: 1rem;
+      appearance: none;
+      border: none;
+      width: 50%;
+
+      &::-webkit-outer-spin-button,
+      &::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+    }
+  }
+}
