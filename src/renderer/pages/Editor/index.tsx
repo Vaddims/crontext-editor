@@ -1,12 +1,13 @@
 import { useSimulationRenderer } from 'renderer/middleware/hooks/useSimulationRenderer';
 import './editor.scss';
-import { Simulation, SimulationInspectorRenderer, SimulationRenderer } from 'crontext';
-import { createContext, useEffect } from 'react';
+import { Entity, MeshRenderer, Simulation, SimulationInspectorRenderer, SimulationRenderer, Vector } from 'crontext';
+import { createContext, useEffect, useState } from 'react';
 import { useSimulationInspectorRenderer } from 'renderer/middleware/hooks/useSimulationInspectorRenderer';
 import { Objectra } from 'objectra';
 import SceneInspector from 'renderer/components/SceneInspector';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
 import Inspector from 'renderer/components/Inspector';
+import '../../../crontext-components';
 
 export interface EditorContextState {
   simulation: Simulation;
@@ -46,23 +47,40 @@ const Editor: React.FC = () => {
         }
 
         simulationRenderer.simulation.start();
+
+        // for (let i = 0; i < 50; i++) {
+        //   const entity = simulationRenderer.simulation.scene.instantEntityInstantiation(new Entity())!;
+        //   entity.components.add(MeshRenderer);
+        //   entity.transform.position = Vector.random().multiply(100);
+        //   entity.transform.rotation = Math.random();
+        //   entity.transform.scale = Vector.random().multiply(2);
+        // }
       }
     })()
   }, [simulationRendererIsLoading]);
 
   useEffect(() => {
     if (simulationInspectorRenderer) {
-      const listener = () => {
+      const listener = (ents: Set<Entity>) => {
         forceRerender();
+        const f = [...ents][0]?.id
+        if (!f) {
+          localStorage.removeItem('te');
+          return;
+        }
+        
+        localStorage.setItem('te', f)
       }
 
       setTimeout(() => {
-        const firstEntity = simulationRenderer!.simulation.scene.getEntities()[0];
-        if (!firstEntity) {
+        const id = localStorage.getItem('te');
+        const entities = simulationRenderer!.simulation.scene.getEntities();
+        const target = id !== null ? entities.find(entity => entity.id === id) : entities[0];
+        if (!target) {
           return;
         }
 
-        simulationInspectorRenderer?.inspector.selectEntities([firstEntity])
+        simulationInspectorRenderer?.inspector.selectEntities([target])
       }, 200)
 
       simulationInspectorRenderer.inspector.addInspectEntityChangeListener(listener);

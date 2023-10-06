@@ -6,6 +6,8 @@
   outline: none;
   display: flex;
   flex-direction: column;
+  max-height: fit-content;
+  overflow: scroll;
 
   & > header {
     padding: .5rem 1rem;
@@ -22,6 +24,5 @@
     flex-direction: column;
     gap: 0;
     box-sizing: border-box;
-    height: 100%;
   }
 }

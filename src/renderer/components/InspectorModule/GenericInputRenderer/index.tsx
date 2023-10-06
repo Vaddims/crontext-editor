@@ -18,7 +18,9 @@ const GenericInputRenderer: React.FC<RendererEntryProps<EditorInspector.Hierarch
       InputFieldUtils.ValidationTiming.Change
     ],
     validate(data) {
-      entry.onChange(data);
+      if (textInputField.inputIsFocused) {
+        entry.onChange(data);
+      }
     }
   });
 

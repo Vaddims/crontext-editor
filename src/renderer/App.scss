@@ -34,6 +34,7 @@ $warn-color: rgb(255, 153, 51);
 html, body, #root {
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
 }
 
 #root {
