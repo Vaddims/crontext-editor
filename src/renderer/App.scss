@@ -1,4 +1,4 @@
-$background-color: rgb(10, 10, 20);
+$background-color: rgb(26, 27, 28);
 $primary-color: rgb(30, 30, 50);
 $secondary-color: rgba(50, 50, 70);
 $accent-color: rgb(0, 150, 255);
@@ -11,6 +11,18 @@ $input-field-hover-border-color: rgb(190, 190, 190);
 $error-color: rgb(225, 40, 50);
 $warn-color: rgb(255, 153, 51);
 
+$icon-color: rgb(137, 137, 138);
+$icon-active-color: rgb(231, 231, 231);
+
+$button-selected-color: rgba(255, 255, 255, 0.05);
+$button-hover-color: rgba(255, 255, 255, 0.05);
+$button-active-color: rgba(255, 255, 255, 0.1);
+
+:root {
+  --system-accent-color: #fff;
+}
+
+$system-accent-color: var(--system-accent-color);
 
 * {
   margin: 0;
@@ -35,8 +47,4 @@ html, body, #root {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-}
-
-#root {
-  background-color: $background-color;
 }

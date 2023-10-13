@@ -9,6 +9,8 @@ export interface GenericTextInputOptions {
   readonly disabled?: boolean;
   readonly allowEmptyValue?: boolean;
   readonly datalist?: TextInputFieldUtils.DatalistItem[];
+  readonly focusOnMount?: boolean;
+  readonly inputProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
   readonly submitActions?: {
     readonly blurInput?: boolean;
   }
@@ -129,6 +131,17 @@ const useTextInputField = function<T = string>(options: Parameters<TextInputFiel
     }
   }
 
+  useEffect(() => {
+    const input = inputRef.current;
+    if (!input) {
+      return;
+    }
+
+    if (options.focusOnMount) {
+      input.focus()
+    }
+  }, [inputRef.current]);
+
   const handleMixedValueStateClick = () => {
     inputField.setMixedValuesState((state) => {
       const nextState = !state;
@@ -163,7 +176,6 @@ const useTextInputField = function<T = string>(options: Parameters<TextInputFiel
       fieldProps={{
         ...options.fieldProps,
       }}
-      inputRef={inputRef}
       helperText={inputField.helperText || undefined}
       inputPrefix={options.inputPrefix}
       inputDatalist={options.datalist}
@@ -174,10 +186,13 @@ const useTextInputField = function<T = string>(options: Parameters<TextInputFiel
       onUnbound={() => inputFieldUnbounding.onUnbound()}
 
       inputProps={{
+        ...options.inputProps,
+
         type: inputType,
         value: inputField.value,
         placeholder: placeholder,
         disabled: options.disabled,
+        ref: inputRef,
 
         onChange: handleInputChange,
         onClick: handleInputClick,

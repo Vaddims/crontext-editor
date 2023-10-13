@@ -1,6 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowsUpDownLeftRight, faBox, faQuestion, faSearch, faShapes } from '@fortawesome/free-solid-svg-icons';
-import { createContext, useContext, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { EditorContext } from 'renderer/pages/Editor';
 import InspectorModule from '../InspectorModule';
 import { Component, Engine, Entity } from 'crontext';
@@ -9,6 +8,9 @@ import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponen
 import useSelectInputField from 'renderer/hooks/inputField/useSelectInputField';
 import useTextInputField from 'renderer/hooks/inputField/useTextInputField';
 import useCheckboxInputField from 'renderer/hooks/inputField/useCheckboxInputField';
+import { Constructor } from 'objectra/dist/types/util.types';
+import { EditorInspector } from 'renderer/services/inspector/editor-inspector';
+import { faFileCode, faSearch, faShapes } from '@danieloi/pro-light-svg-icons';
 
 export interface InspectorContextState {
   entity: Entity;
@@ -20,12 +22,32 @@ export const InspectorContext = createContext<InspectorContextState>({
   forceRerender: () => void 0,
 })
 
+const ComponentRepresenter = (props: { componentConstructor: Constructor<Component>, entity: Entity }) => {
+  const { entity } = props;
+  const Inspector = EditorInspector.getConstuctorInspector(props.componentConstructor) as typeof EditorInspector | null;
+
+  const s = useContext(EditorContext);
+
+  const handleRepresenterClick = () => {
+    entity.scene!.instantResolve(entity.components.add(props.componentConstructor))
+    s.forceRerender();
+  }
+
+  return (
+    <div className='component-representer' onClick={handleRepresenterClick}>
+      <FontAwesomeIcon icon={Inspector?.[EditorInspector.icon] ?? faFileCode} className='icon' size='2x' />
+      <span>{props.componentConstructor.name}</span>
+    </div>
+  )
+}
+
 const Inspector: React.FC = () => {
   const editorContext = useContext(EditorContext);
   const rerender = useComponentForceRerender();
   const [ findComponentState, setFindComponentState ] = useState(false);
   const { inspector } = editorContext.simulationInspectorRenderer ?? {};
-  const ref = useRef<HTMLElement>(null);
+  const inspectorContentRef = useRef<HTMLElement>(null);
+  const showcaseRef = useRef<HTMLDivElement>(null);
 
   const entity = [...inspector.selectedEntities][0];
 
@@ -46,10 +68,33 @@ const Inspector: React.FC = () => {
   })
 
   const textInput = useTextInputField({
-    placeholder: 'Find Component',
+    placeholder: 'Search Component',
     inputIcon: faSearch,
-    // focusOnMount: true,
+    focusOnMount: true,
+    fieldProps: {
+      className: 'search-component-field'
+    }
   });
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      rerender()
+    }, 200);
+    return () => clearInterval(interval);
+  })
+
+
+  useEffect(() => {
+    if (!showcaseRef.current || !inspectorContentRef.current || !findComponentState) {
+      return;
+    }
+
+    inspectorContentRef.current.scrollBy({
+      top: 1000,
+      behavior: 'smooth',
+    })
+}, [showcaseRef.current, findComponentState])
 
   // TODO Change to enable entity
   const useEntityCheckbox = useCheckboxInputField({
@@ -76,7 +121,7 @@ const Inspector: React.FC = () => {
     }
   });
 
-  const componentConstructors = Engine.getInheritedConstructors(Component);
+  const componentConstructors = Component.getUsableComponentConstructors();
   const unappliedComponentConstructors = entity ? componentConstructors
     .filter(componentConstructor => (
       componentConstructor.name.toLowerCase().includes(textInput.value.toLowerCase()) &&
@@ -89,10 +134,16 @@ const Inspector: React.FC = () => {
     )
   }
 
+  const a = Component.getUsableComponentConstructors();
+  const allInstances = [...entity.components.instances()];
+  const existingInstances = allInstances.map(i => i.constructor);
+  const searchInstances = a.filter(aa => aa.name.toUpperCase().includes(textInput.value.toUpperCase()))
+  const addable = a.filter(b => !existingInstances.includes(b) && searchInstances.includes(b));
+  const b = Component.getComponentsWithType(addable);
+  
+
   return (
-    <section className='editor-visual-component inspector'
-    ref={ref}
-    >
+    <section className='editor-visual-component inspector'>
       <header>
         <FontAwesomeIcon icon={faShapes} className='entity-icon' />
         {useEntityCheckbox.render()}
@@ -100,10 +151,12 @@ const Inspector: React.FC = () => {
         {tagSelectInput.render()}
         {labelSelectInput.render()}
       </header>
-      <main onClick={(event) => {
-        setFindComponentState(false)
-        textInput.clearValue();
-      }}
+      <main onClick={
+        (event) => {
+          setFindComponentState(false)
+          textInput.clearValue();
+        }}
+        ref={inspectorContentRef}
       >
         <InspectorContext.Provider value={{ entity, forceRerender: rerender }}>
           <InspectorModule component={entity.transform} />
@@ -121,36 +174,33 @@ const Inspector: React.FC = () => {
         >Add Component</button>
 
         <div aria-hidden={!findComponentState} className='component-management' onClick={(event) => event.stopPropagation()}>
-          {textInput.render()}
-          <div className='component-viewer' ref={(reff) => {
-            if (!reff || !ref.current || !findComponentState) {
-              return;
-            }
+          {findComponentState && textInput.render()}
 
-            ref.current.scrollBy({
-              top: 1000,
-              behavior: 'smooth',
-            })
-          }}>
-            {unappliedComponentConstructors.length > 0 ? unappliedComponentConstructors.map((componentConstructor) => (
-              <div 
-                className='component-viewer-item' 
-                key={componentConstructor.name}
-                onClick={() => {
-                  setFindComponentState(false)
-                  textInput.clearValue();
-                  const selectedEntity = [...editorContext.simulationInspectorRenderer.inspector.selectedEntities][0];
-                  editorContext.simulationRenderer.simulation.scene.instantResolve(selectedEntity.components.add(componentConstructor))
-                }}
-              >
-                <FontAwesomeIcon icon={faQuestion} />
-                <span>{componentConstructor.name}</span>
+          <div className='component-showcase' ref={showcaseRef}>
+            {/* <div className='category recent'>
+              <span>Recently Used</span>
+              <div className='catalog'>
+                {Component.getUsableComponentConstructors().map((constructor) => (
+                  <ComponentRepresenter key={constructor.name} componentConstructor={constructor} entity={entity} />
+                ))}
               </div>
-            )) : (
-              <div className='empty-text-wrapper'>
-                <span>No components found</span>
+            </div> */}
+            <div className='category'>
+              <span>Buildins</span>
+              <div className='catalog'>
+                {b.buildins.map((constructor) => (
+                  <ComponentRepresenter key={constructor.name} componentConstructor={constructor} entity={entity} />
+                ))}
               </div>
-            )}
+            </div>
+            <div className='category'>
+              <span>Customs</span>
+              <div className='catalog'>
+                {b.customs.map((constructor) => (
+                  <ComponentRepresenter key={constructor.name} componentConstructor={constructor} entity={entity} />
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       </main>

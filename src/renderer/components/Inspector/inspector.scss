@@ -2,15 +2,17 @@
 
 .inspector {
   grid-area: inspector;
-  background-color: App.$primary-color;
+  background-color: App.$background-color;
   display: grid;
   grid-template-rows: auto 1fr;
   box-sizing: border-box;
   padding: 0;
-  // height: 1fr;
   max-height: fit-content;
-  overflow: scroll;
   scrollbar-width: none;
+  width: auto;
+  min-width: 25rem;
+  max-height: 100%;
+  box-sizing: border-box;
 
   & > header {
     width: 100%;
@@ -23,7 +25,7 @@
     z-index: 200;
     top: 0;
     position: sticky;
-    background-color: App.$primary-color;
+    background-color: App.$background-color;
     box-shadow: 0px 0px 30px -10px black;
 
     grid-template-columns: 3rem min-content 1fr .5fr 1fr;
@@ -63,9 +65,10 @@
   }
 
   & > main {
+    overflow: hidden;
+    overflow-y: scroll;
     display: flex;
     flex-direction: column;
-    // justify-content: center;
     align-items: center;
 
     & > section {
@@ -76,12 +79,12 @@
   .add-component-action {
     cursor: pointer;
     background-color: transparent;
-    border: none;
-    border: .1rem solid App.$accent-color;
+    border: .1rem solid App.$system-accent-color;
     font-size: 1rem;
-    width: 15rem;
-    padding: .2rem .5rem;
-    color: App.$accent-color;
+    width: calc(100% - 2rem);
+    max-width: 15rem;
+    padding: .2rem 1rem;
+    color: App.$system-accent-color;
     border-radius: .5rem;
     margin: 1rem;
     transition: background-color .25s ease, color .25s ease;
@@ -91,51 +94,127 @@
     }
 
     &:hover {
-      background-color: App.$accent-color;
+      background-color: App.$system-accent-color;
       color: App.$text-color;
     }
   }
 
   .component-management {
-    width: 70%;
-    width: 15rem;
+    width: 100%;
     margin: 1rem;
     display: flex;
     flex-direction: column;
-    gap: .5rem;
+    gap: 1rem;
 
     &[aria-hidden=true] {
       display: none;
     }
 
-    & > .component-viewer {
-      border: .1rem solid App.$secondary-color;
-      border-radius: .5rem;
+    .search-component-field {
+      align-self: center;
+      width: calc(100% - 2rem);
+      max-width: 15rem;
+    }
+
+    & > .component-showcase {
+      width: 100%;
       display: flex;
       flex-direction: column;
       overflow: hidden;
 
-      & > .component-viewer-item {
+      // & > .component-viewer-item {
+      //   display: flex;
+      //   flex-direction: row;
+      //   gap: .5rem;
+      //   padding-inline: .5rem;
+      //   padding-block: .4rem;
+
+      //   border-radius: .5rem;
+      //   cursor: pointer;
+
+      //   &:hover {
+      //     background-color: App.$accent-color;
+      //   }
+      // }
+
+      // .empty-text-wrapper {
+      //   padding-inline: .5rem;
+      //   padding-block: .4rem;
+
+      //   span {
+      //     color: grey;
+      //   }
+      // }
+
+      gap: 2rem;
+
+      & > .category {
         display: flex;
-        flex-direction: row;
+        flex-direction: column;
         gap: .5rem;
-        padding-inline: .5rem;
-        padding-block: .4rem;
 
-        border-radius: .5rem;
-        cursor: pointer;
-
-        &:hover {
-          background-color: App.$accent-color;
+        & > span {
+          margin-left: 1rem;
+          font-weight: 600;
         }
-      }
 
-      .empty-text-wrapper {
-        padding-inline: .5rem;
-        padding-block: .4rem;
+        & > .catalog {
+          display: grid;
+          grid-template-rows: auto auto;
+          grid-auto-flow: column;
+          justify-content: start;
+          overflow-x: scroll;
+          gap: .5rem;
+          padding-inline: 1rem;
 
-        span {
-          color: grey;
+          & > .component-representer {
+            width: 7rem;
+            gap: .5rem;
+            border: 2px solid rgb(71, 71, 71);
+            border-radius: 5px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: .5rem;
+            overflow:hidden;
+            white-space:nowrap;
+            text-overflow: ellipsis;
+            user-select: none;
+
+            & > .icon {
+              path {
+                fill: App.$icon-color;
+              }
+            }
+
+            & > span {
+              font-size: .8rem;
+              text-align: center;
+              overflow:hidden;
+              white-space:nowrap;
+              text-overflow: ellipsis;
+            }
+
+            &:hover {
+              background-color: App.$button-hover-color;
+            }
+
+            &:active {
+              background-color: App.$button-active-color;
+
+              & > .icon {
+                path {
+                  fill: App.$icon-active-color;
+                }
+              }
+            }
+          }
+        }
+
+        &.recent {
+          & > .catalog {
+            grid-template-rows: auto;
+          }
         }
       }
     }

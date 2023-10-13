@@ -2,8 +2,7 @@
 
 .scene-inspector-item {
   margin-block: -.1rem;
-  background-color: App.$primary-color;
-  // padding: .1rem;
+  background-color: App.$background-color;
   padding-block: .3rem;
   padding-right: 1rem;
   z-index: 1;
@@ -62,17 +61,17 @@
 
   &[draggable=false] {
     .entity-name-input {
-      background-color: App.$primary-color;
+      background-color: App.$background-color;
     }
   }
 
   &[aria-selected=true] {
-    background-color: App.$accent-color;
+    background-color: App.$system-accent-color;
     z-index: 10;
   }
 
   &[aria-selected=false]:hover {
-    background-color: App.$secondary-color;
+    background-color: App.$button-hover-color;
     z-index: 5;
   }
 }

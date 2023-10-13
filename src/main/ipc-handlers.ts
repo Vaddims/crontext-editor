@@ -1,19 +1,25 @@
 import path from 'path';
-import * as fs from 'fs/promises';
-import { BrowserWindow, Menu } from 'electron';
+import fs from 'fs/promises';
+import { BrowserWindow, Menu, nativeImage, systemPreferences } from 'electron';
 import { createSimulationInspectorMenuTemplate } from './menus/simulation-inspector.menu';
 import { createComponentInspectorEditorMenuTemplate } from './menus/component-inspector-editor.menu';
+import os from 'os';
+import { buildElectronMenuOptions } from './context-menu';
+import { ContextMenuItemConstructorOptions } from 'types/context-menu.type';
 
-const createJSONFilePath = (fileName: string) => path.join(__dirname, '../../temp', fileName + '.json');
+const homePath = os.homedir()
+const usrDocsDir = path.join(homePath, 'Documents');
+const editorPathDirName = 'crontext-editor';
+const editorPathDir = path.join(usrDocsDir, editorPathDirName);
+
+const createJSONFilePath = (fileName: string) => path.join(editorPathDir, fileName + '.json');
 
 export const readJson = async (fileName: string) => {
   const file = createJSONFilePath(fileName);
-
   try {
     const data = await fs.readFile(file, 'utf-8');
     return JSON.parse(data)
   } catch (error) {
-    console.warn(error);
     return null;
   }
 }
@@ -22,10 +28,18 @@ export const writeJson = async (fileName: string, data: string) => {
   const file = createJSONFilePath(fileName);
 
   try {
+    const editorDir = await fs.stat(editorPathDir);
+    if (!editorDir.isDirectory()) {
+      throw '';
+    }
+  } catch {
+    await fs.mkdir(editorPathDir);
+  }
+
+  try {
     await fs.writeFile(file, data);
     return true;
   } catch (error) {
-    console.warn(error);
     return false;
   }
 }
@@ -48,4 +62,20 @@ export const openComponentInspectEditorContextMenu = async (win: BrowserWindow) 
       setTimeout(() => resolve(null))
     })
   })
+}
+
+export const openRendererContextMenu = async (window: BrowserWindow, options: ContextMenuItemConstructorOptions<unknown>[]) => {
+  return await new Promise((resolve) => {
+    const menuTemplate = buildElectronMenuOptions(options, resolve);
+    const menu = Menu.buildFromTemplate(menuTemplate);
+    menu.popup({ window });
+
+    menu.addListener('menu-will-close', () => {
+      setTimeout(() => resolve(void 0));
+    })
+  });
+}
+
+export const getAccentColor = () => {
+  return systemPreferences.getAccentColor();
 }

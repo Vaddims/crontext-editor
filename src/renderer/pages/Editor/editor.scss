@@ -1,47 +1,343 @@
 @use 'src/renderer/App.scss';
 
 .editor {
+  // position: relative;
   width: 100vw;
   height: 100vh;
   overflow: hidden;
 
   display: grid;
-  grid-template-areas: 
-  'x x x'
-  'scene-inspector simulation-renderer inspector'
-  'scene-inspector simulation-inspector-renderer inspector'
-  'a a a';
+  grid-template-areas:
+  'menu content';
 
-  grid-template-columns: 20rem auto 1fr;
-  grid-template-rows: 2rem auto auto 10rem;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
 
-  .renderer {
-    nav {
-      background-color: App.$primary-color;
+  & > .app.sidebar-header {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    top: 0;
+    left: 0;
+    width: 200px;
+    height: 50px;
+    z-index: 1000000000;
+    -webkit-app-region: drag;
+
+    &[aria-hidden=true] {
+      width: 120px;
     }
 
-    & > canvas {
-      height: calc(1920 / 2.8);
-      outline: none;
-      background-color: rgb(0, 0, 0);
-    }
-
-    &.simulation-renderer {
-      grid-area: simulation-renderer;
-
-      &[data-fullscreen=true] {
-        z-index: 100000;
-        grid-area: none;
-        position: absolute;
-        width: 100vw;
-        height: 100vh;
-        left: 0;
-        top: 0;
+    & > .toggler {
+      padding: 5px 10px;
+      border-radius: 5px;
+      z-index: 10000;
+      margin-left: 90px;
+  
+      user-select: none;
+      -webkit-app-region: no-drag;
+  
+      &:hover {
+        background-color: App.$button-hover-color;
+      }
+  
+      &:active {
+        background-color: App.$button-active-color;
+  
+        path {
+          fill: App.$icon-active-color;
+        }
       }
     }
+  }
+
+  & > .app.sidebar {
+    user-select: none;
+    padding-top: 50px;
+    transition: width .25s ease;
+    width: 12.5rem;
+    grid-area: menu;
+    overflow: hidden;
+    border-right: .1rem solid black;
+    z-index: 100000000;
+
+    * {
+      color: white;
+
+      path {
+        fill: white;
+      }
+    }
+
+    & > header {
+      display: flex;
+      box-sizing: border-box;
+      height: 50px;
+      width: 100%;
+      user-select: none;
+      align-items: center;
+
+      svg {
+        margin-left: 100px;
+
+        path {
+          fill: App.$icon-color;
+        }
+      }
+    }
+
+    &[aria-hidden=true] {
+      width: 0rem;
+      border-right: 0rem solid black;
+    }
+
+    & > section {
+      width: 12.5rem;
+      padding-top: 0;
+      padding: .5rem;
+      box-sizing: border-box;
+
+      h3 {
+        padding-inline: .5rem;
+        margin-bottom: 1rem;
+      }
+
+      & > .option {
+        width: 100%;
+        background-color: App.$system-accent-color;
+        box-sizing: border-box;
+        display: flex;
+        gap: .5rem;
+        padding: .25rem;
+        padding-inline: .5rem;
+        align-items: center;
+        border-radius: .25rem;
+      }
+    }
+  }
+
+  & > .content {
+    background-color: App.$background-color;
+    box-sizing: border-box;
+    grid-area: content;
+    display: grid;
+
+    display: flex;
+    flex-direction: column;
+
+    & > .app.title-bar {
+      position: relative;
+      background-color: App.$background-color;
+      height: 50px;
+      width: 100%;
+      z-index: 100000;
+      border-bottom: .1rem solid black;
+      grid-area: titlebar;
+      user-select: none;
+  
+      * {
+        -webkit-app-region: no-drag;
+      }
+      
+      & > .controls {
+        position: absolute;
+        max-width: calc(100vw - 125px);
+        right: 0;
+        width: 100%;
+        height: 50px;
+        box-sizing: border-box;
+        user-select: none;
+        -webkit-app-region: drag;
+      }
+  
+      & > .controls {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+  
+        .simulation-controls {
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+          margin-right: 150px;
+  
+          .simulation-control {
+            padding: 5px 10px;
+            border-radius: 5px;
+  
+            path {
+              fill: App.$icon-color;
+            }
+  
+            &:hover {
+              background-color: App.$button-hover-color;
+            }
+  
+            &:active {
+              background-color: App.$button-active-color;
+  
+              path {
+                fill: App.$icon-active-color
+              }
+            }
+          }
+        }
+      }
+    }
+
+    & > main {
+      position: relative;
+
+      display: grid;
+      grid-template-areas:
+      'scene-inspector simulation-renderer inspector'
+      'scene-inspector simulation-inspector-renderer inspector';
+  
+      grid-template-columns: 1fr 3fr 1fr;
+      grid-template-rows: 1fr 1fr;
+
+      overflow: hidden;
+      box-sizing: border-box;
+      width: 100%;
+      height: calc(100vh - 50px - 2px); // fullscreen - titlebar - titlebar divider
+      
+      .renderer {
+        $timing: .5s;
+        overflow: hidden;
+        box-sizing: border-box;
+        transition: left $timing ease, top $timing ease, width $timing ease, height $timing ease, box-shadow $timing ease;
     
-    &.simulation-inspector-renderer {
-      grid-area: simulation-inspector-renderer;
+        nav {
+          background-color: App.$primary-color;
+        }
+    
+        & > canvas {
+          position: absolute;
+          outline: none;
+          background-color: App.$background-color;
+        }
+    
+        &.simulation-renderer {
+          z-index: 1000;
+          grid-area: simulation-renderer;
+          border: .1rem solid black;
+          border-top: none;
+          box-shadow: 0px 0px 0px rgb(0, 0, 0);
+        }
+        
+        &.simulation-inspector-renderer {
+          grid-area: simulation-inspector-renderer;
+          border-inline: .1rem solid black;
+          position: relative;
+
+          .control-floater {
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.777);
+            $margin: 1rem;
+            padding: .2rem;
+            position: absolute;
+            height: 1000%;
+            overflow: scroll;
+            background-color: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 7px;
+            border: 2px solid rgb(49, 50, 51);
+            z-index: 2;            
+            max-height: calc(100% - $margin * 2);
+            left: $margin;
+            top: 50%;
+            transform: translateY(-50%);
+
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: .5rem;
+
+            hr {
+              border: 1px solid rgba(255, 255, 255, 0.2);
+              border-radius: 10px;
+              width: 100%;
+            }
+
+            & > .controllers {
+              display: flex;
+              flex-direction: column;
+
+              path {
+                fill: App.$icon-color;
+              }
+
+              & > .controller {
+                padding: 5px 10px;
+                border-radius: 5px;
+
+                &:hover {
+                  background-color: App.$button-hover-color;
+                }
+
+                &:active {
+                  background-color: App.$button-active-color;
+
+                  path {
+                    fill: App.$icon-active-color;
+                  }
+                }
+
+                &[aria-selected=true] {
+                  background-color: App.$system-accent-color;
+
+                  path {
+                    fill: white;
+                  }
+                }
+              }
+            }
+          }
+        }
+
+        &[data-bigpicture=true] {
+          grid-area: none;
+          position: absolute;
+        }
+
+        &[data-bigpicture-lock=true] {
+          left: -.1rem !important;
+          width: 100% !important;
+          height: calc(100% + 2px) !important;
+          box-shadow: 0px 0px 100px 30px rgb(0, 0, 0, 0);
+        }
+      }
+
+      .renderer-size-decoy {
+        grid-area: simulation-renderer;
+      }
+    }
+  }
+}
+
+body[data-window-innactive=true] {
+  .editor > main {
+    & > .app.title-bar {
+      background-color: rgb(33, 34, 35);
+    }
+
+    & > .app.sidebar {
+      background-color: rgb(33, 34, 35);
+    }
+  }
+}
+
+body[data-fullscreen=true] {
+  .app.sidebar-header {
+    width: 40px !important;
+
+    & > .toggler {
+      margin-left: 10px;
+    }
+  }
+
+  .app.title-bar {
+    .controls {
+      max-width: calc(100vw - 40px) !important;
     }
   }
 }

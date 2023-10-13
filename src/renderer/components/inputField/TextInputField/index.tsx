@@ -13,7 +13,6 @@ export namespace TextInputFieldUtils {
   export interface Props extends InputFieldCommonProps {
     readonly inputProps?: React.DetailedHTMLProps<React.InputHTMLAttributes<HTMLInputElement>, HTMLInputElement>;
     readonly inputDatalist?: DatalistItem[];
-    readonly inputRef?: React.Ref<HTMLInputElement>;
   }
 }
 
@@ -33,7 +32,6 @@ const TextInputField: React.FC<TextInputFieldUtils.Props> = (props) => {
     >
       <input
         {...props.inputProps}
-        ref={props.inputRef}
         id={inputId}
         list={dataListId}
         required={props.markAsRequired}

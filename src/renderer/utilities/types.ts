@@ -5,3 +5,5 @@ export type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>
 export type Writeable<T extends { [x: string]: any }> = {
   -readonly [P in keyof T]: T[P];
 }
+
+export type TypedOmit<T, K extends keyof T> = Omit<T, K>;

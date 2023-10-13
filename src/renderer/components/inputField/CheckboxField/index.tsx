@@ -4,6 +4,7 @@ import { faCheck, faLayerGroup } from '@fortawesome/free-solid-svg-icons';
 import { InputFieldCommonProps } from '../InputField';
 import { nanoid } from 'nanoid';
 import { composeClassNames } from 'renderer/utilities/reactComponent.util';
+import { useMemo } from 'react';
 
 interface CheckboxFieldProps extends InputFieldCommonProps {
   readonly select?: boolean;
@@ -11,7 +12,7 @@ interface CheckboxFieldProps extends InputFieldCommonProps {
 }
 
 const CheckboxField: React.FC<CheckboxFieldProps> = (props) => {
-  const fieldId = `chbx-${nanoid()}`;
+  const fieldId = useMemo(() => `chbx-${nanoid()}`, []);
 
   return (
     <label

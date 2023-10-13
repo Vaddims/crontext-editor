@@ -157,7 +157,7 @@ label.input-field {
     }
 
     &:focus-within {
-      border: .1rem solid App.$accent-color;
+      border: .1rem solid App.$system-accent-color;
     }
 
     .action-icon {

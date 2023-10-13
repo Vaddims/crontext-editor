@@ -1,6 +1,6 @@
 import { Color, Component, EntityTransform } from 'crontext';
 import './inspector-module.scss';
-import { IconDefinition, faAngleRight, faArrowRight, faEllipsisVertical, faQuestion } from '@fortawesome/free-solid-svg-icons';
+import { IconDefinition, faAngleRight, faArrowRight, faEllipsisVertical, faFileCode, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useContext, useEffect, useState } from 'react';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
@@ -19,6 +19,7 @@ import GenericInputRenderer from './GenericInputRenderer';
 import LabelRenderer from './LabelRenderer';
 import ColorInputRenderer from './ColorInputRenderer';
 import EditorModuleTreeRenderer from './EditorModuleTreeRenderer';
+import { Constructor } from 'objectra/dist/types/util.types';
 
 interface InspectorModuleProps {
   name?: string;
@@ -42,13 +43,14 @@ const InspectorModule: React.FC<InspectorModuleProps> = (props) => {
   const classNameComposition = ['inspector-module', props.className].join(' ');
 
   const inspectorEditor = EditorInspector.createFromObject(props.component);
+  const Inspector = EditorInspector.getConstuctorInspector(props.component.constructor as Constructor) ?? null;
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      rerender()
-    }, 200);
-    return () => clearInterval(interval);
-  })
+  // useEffect(() => {
+  //   const interval = setInterval(() => {
+  //     rerender()
+  //   }, 200);
+  //   return () => clearInterval(interval);
+  // })
 
   return (
     <section className={classNameComposition} data-content-hidden={contentShouldCollapse}>
@@ -57,7 +59,7 @@ const InspectorModule: React.FC<InspectorModuleProps> = (props) => {
           e.preventDefault();
           setContentShouldCollapse((state) => !state)}
         } />
-        <FontAwesomeIcon icon={inspectorEditor.icon} className='icon' />
+        <FontAwesomeIcon icon={Inspector?.[EditorInspector.icon] ?? faFileCode} className='icon' />
         <span className='name'>{splitCaseMixedString(props.component.constructor.name ?? props.name ?? 'Untitled').join(' ')}</span>
         {!(props.component instanceof EntityTransform) && (
           <FontAwesomeIcon className='additional-actions' icon={faEllipsisVertical} onClick={async () => {

@@ -1,6 +1,7 @@
 // Disable no-unused-vars, broken for spread args
 /* eslint no-unused-vars: off */
 import { contextBridge, ipcRenderer, IpcRendererEvent, Menu } from 'electron';
+import { ContextMenuItemConstructorOptions } from "types/context-menu.type";
 
 export type Channels = 'wride-json' | '';
 
@@ -19,6 +20,22 @@ const electronHandler = {
 
     async openCIEContextMenu() {
       return await ipcRenderer.invoke('open-cie-context-menu');
+    },
+
+    async openContextMenu<T>(contextMenuItemOptions: ContextMenuItemConstructorOptions<T>[]) {
+      return await ipcRenderer.invoke('open-renderer-context-menu', contextMenuItemOptions) as T | undefined;
+    },
+
+    async getNativeImageBlobUrl(name: string) {
+      return await ipcRenderer.invoke('load-native-image', name) as string;
+    },
+
+    async getAccentColor() {
+      return await ipcRenderer.invoke('accent-color') as string;
+    },
+
+    async isWindowFullscreen() {
+      return await ipcRenderer.invoke('is-window-fullscreen') as boolean;
     },
 
     on(channel: Channels, func: (...args: unknown[]) => void) {

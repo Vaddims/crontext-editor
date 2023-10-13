@@ -1,10 +1,10 @@
 import { EntityTransform } from "crontext";
 import { EditorInspector } from "../editor-inspector";
-import { faArrowsUpDownLeftRight } from "@fortawesome/free-solid-svg-icons";
+import { faArrowsUpDownLeftRight } from "@danieloi/pro-light-svg-icons";
 
 @EditorInspector.RegisterForComponent(EntityTransform as any)
 export class EntityTransformInspector extends EditorInspector<EntityTransform> {
-  public override readonly icon = faArrowsUpDownLeftRight;
+  static readonly [EditorInspector.icon] = faArrowsUpDownLeftRight;
 
   public override createTree(component: EntityTransform) {
     this.entries.push(

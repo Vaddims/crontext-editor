@@ -9,12 +9,12 @@
  * `./src/main.js` using webpack. This gives us some performance wins.
  */
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, ipcRenderer } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer, systemPreferences } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { openComponentInspectEditorContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
+import { getAccentColor, openComponentInspectEditorContextMenu, openRendererContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
 
 class AppUpdater {
   constructor() {
@@ -25,12 +25,6 @@ class AppUpdater {
 }
 
 let mainWindow: BrowserWindow | null = null;
-
-ipcMain.on('ipc-example', async (event, arg) => {
-  const msgTemplate = (pingPong: string) => `IPC test: ${pingPong}`;
-  console.log(msgTemplate(arg));
-  event.reply('ipc-example', msgTemplate('pong'));
-});
 
 if (process.env.NODE_ENV === 'production') {
   const sourceMapSupport = require('source-map-support');
@@ -74,8 +68,14 @@ const createWindow = async () => {
     show: false,
     width: 1024,
     height: 728,
+    titleBarStyle: 'hidden',
     icon: getAssetPath('icon.png'),
+    frame: false,
+    vibrancy: 'sidebar',
+    trafficLightPosition: { x: 20, y: 17.5 },
+    // backgroundColor: 'red',
     webPreferences: {
+      // devTools: false,
       nodeIntegration: true,
       // contextIsolation: false,
       nodeIntegrationInWorker: true,
@@ -87,8 +87,8 @@ const createWindow = async () => {
   });
 
   mainWindow.loadURL(resolveHtmlPath('index.html'));
-
   mainWindow.showInactive()
+  // mainWindow.webContents.openDevTools();
 
   mainWindow.on('ready-to-show', () => {
     if (!mainWindow) {
@@ -100,6 +100,14 @@ const createWindow = async () => {
       // mainWindow.show()
     }
   });
+
+  mainWindow.on('enter-full-screen', () => {
+    mainWindow?.webContents.send('fullscreen-change', true);
+  })
+
+  mainWindow.on('leave-full-screen', () => {
+    mainWindow?.webContents.send('fullscreen-change', false);
+  })
 
   mainWindow.on('closed', () => {
     mainWindow = null;
@@ -114,9 +122,15 @@ const createWindow = async () => {
     return { action: 'deny' };
   });
 
+  systemPreferences.on('accent-color-changed', (event, newColor) => {
+    console.log(event, newColor);
+    // mainWindow.webContents.send('accentColor', newColor);
+  });
+
+
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
-  new AppUpdater();
+  // new AppUpdater();
 };
 
 /**
@@ -131,15 +145,46 @@ app.on('window-all-closed', () => {
   }
 });
 
+const appNotFocusedColor = 'rgb(33, 34, 35)';
+const transparentColor = 'rgba(0, 0, 0, 0)';
+
+app.on('browser-window-blur', () => {
+  mainWindow?.setBackgroundColor(appNotFocusedColor);
+})
+
+app.on('browser-window-focus', () => {
+  mainWindow?.setBackgroundColor(transparentColor);
+})
+
+app.on('web-contents-created', () => {
+  mainWindow?.setBackgroundColor(transparentColor);
+})
+
 app
   .whenReady()
-  .then(() => {
+  .then(async () => {
+    // do for every window
+    mainWindow?.setBackgroundColor(appNotFocusedColor)
+    mainWindow?.webContents.addListener('dom-ready', () => {
+      const accentColor = systemPreferences.getAccentColor();
+      // mainWindow?.setBackgroundColor(appNotFocusedColor);
+    })
+
     ipcMain.handle('read-json', (event, path) => readJson(path));
     ipcMain.handle('write-json', (event, path, data) => writeJson(path, data));
     ipcMain.handle('open-sir-context-menu', (event) => openSimulationInspectorRendererContextMenu(mainWindow!));
     ipcMain.handle('open-cie-context-menu', (event) => openComponentInspectEditorContextMenu(mainWindow!));
+    ipcMain.handle('open-renderer-context-menu', (_, menuOptions) => openRendererContextMenu(mainWindow!, menuOptions));
+    ipcMain.handle('accent-color', () => getAccentColor());
+    ipcMain.handle('is-window-fullscreen', () => {
+      return mainWindow?.fullScreen || false;
+    });
 
-    createWindow();
+    await createWindow();
+
+    // mainWindow?.setBackgroundColor(appNotFocusedColor)
+
+
     app.on('activate', () => {
       // On macOS it's common to re-create a window in the app when the
       // dock icon is clicked and there are no other windows open.

@@ -1,5 +1,5 @@
 import { SimulationRenderer, Vector } from "crontext";
-import { useContext, useEffect, useRef, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { EditorContext } from "renderer/pages/Editor";
 
 interface EditorRendererResult {
@@ -20,17 +20,11 @@ interface EditorRendererFulfilledResult extends EditorRendererResult {
 type EditorRendererConditionalResult =  EditorRendererPendingResult | EditorRendererFulfilledResult;
 
 export const useSimulationRenderer = (): EditorRendererConditionalResult => {
-  const [ renderer, setRenderer ] = useState<SimulationRenderer | null>(null);
+  const renderer = useMemo(() => new SimulationRenderer(), []);
   const [ canvasElement, setCanvasElement ] = useState<HTMLCanvasElement | null>(null);
   const [ fullscreen, setFullscreen ] = useState(false);
-
-  const onCanvasMount = (providedCanvasElement: HTMLCanvasElement) => {
-    if (providedCanvasElement && providedCanvasElement !== canvasElement) {
-      setCanvasElement(providedCanvasElement);
-      const simulationRenderer = new SimulationRenderer(providedCanvasElement);
-      setRenderer(simulationRenderer);
-    }
-  }
+  const wrapperRef = useRef<HTMLElement>(null);
+  (window as any).crontext_editor_fullscreen = fullscreen;
 
   useEffect(() => {
     const listener = (event: KeyboardEvent) => {
@@ -46,16 +40,15 @@ export const useSimulationRenderer = (): EditorRendererConditionalResult => {
   const normal = new Vector(1920, 1080).divide(2.8);
   const fullscreenSize = new Vector(window.innerWidth, window.innerHeight);
   const size = fullscreen ? fullscreenSize : normal;
+  // const size = normal
 
   const render = () => (
-    <section className="editor-visual-component renderer simulation-renderer" data-fullscreen={fullscreen}>
-      <canvas 
-        tabIndex={1}
-        id={renderer?.simulation.scene.name}
-        ref={onCanvasMount} 
-        width={size.x}
-        height={size.y}
-      />
+    <section 
+      className="editor-visual-component renderer simulation-renderer" 
+      data-fullscreen={fullscreen} 
+      dangerouslySetInnerHTML={renderer ? {__html: renderer.canvas}: undefined}
+      ref={wrapperRef}
+    >
     </section>
   )
 

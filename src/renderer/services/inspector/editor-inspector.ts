@@ -1,4 +1,4 @@
-import { faFileCode, faQuestion } from "@fortawesome/free-solid-svg-icons";
+import { faFileCode } from "@danieloi/pro-light-svg-icons";
 import { Color, Component, Engine, EntityTransform, Shape, Vector } from "crontext";
 import { Transformator } from "objectra";
 import { Constructor } from "objectra/dist/types/util.types";
@@ -7,8 +7,10 @@ import { splitCaseMixedString } from "renderer/utilities/text.utils";
 
 export type ComponentLike = Component | EntityTransform;
 
+
+const inspectorIcon = Symbol('EDITORINSPECTOR:ICON');
 export class EditorInspector<T extends ComponentLike = ComponentLike> {
-  public readonly icon = faFileCode;
+  public static readonly [inspectorIcon] = faFileCode;
 
   protected readonly excludeFields: (keyof T)[] = ['entity', 'transform'] as (keyof T)[];
   
@@ -225,10 +227,10 @@ export class EditorInspector<T extends ComponentLike = ComponentLike> {
     return fields;
   }
 
-  static getConstuctorInspector<T extends ComponentLike>(constructor: Constructor): Constructor<EditorInspector<T>> | null {
+  static getConstuctorInspector<T extends ComponentLike>(constructor: Constructor): typeof EditorInspector<T> | null {
     for (const [ComponentConstructor, Editor] of EditorInspector.customEditor) {
       if (ComponentConstructor === constructor) {
-        return Editor;
+        return Editor as typeof EditorInspector<T>;
       }
     }
 
@@ -254,6 +256,8 @@ export class EditorInspector<T extends ComponentLike = ComponentLike> {
       EditorInspector.customEditor.set(componentConstructor, constructor);
     }
   }
+
+  public static readonly icon: typeof inspectorIcon = inspectorIcon;
 }
 
 export namespace EditorInspector {

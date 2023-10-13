@@ -1,6 +1,8 @@
 import { Entity, MeshRenderer, Simulation, SimulationInspectorRenderer, SimulationRenderer, Space, TransformMode, Vector } from "crontext";
 import { Objectra } from "objectra";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { openContextMenu } from "renderer/services/context-menu/context-menu";
+import { newEntityContextMenuPrebuild } from "renderer/services/context-menu/prebuilds/new-entity.cmp";
 
 interface EditorRendererResult {
   isLoading: boolean;
@@ -20,15 +22,16 @@ interface EditorRendererFulfilledResult extends EditorRendererResult {
 type EditorRendererConditionalResult =  EditorRendererPendingResult | EditorRendererFulfilledResult;
 
 export const useSimulationInspectorRenderer = (simulation: Simulation | null): EditorRendererConditionalResult => {
+  // const inspectorRenderer = useMemo(() => new SimulationInspectorRenderer(simulation), []);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [ renderer, setRenderer ] = useState<SimulationInspectorRenderer | null>(null);
 
-  useEffect(() => {
-    if (canvasRef.current && simulation) {
-      const sir = new SimulationInspectorRenderer(canvasRef.current, simulation);
-      setRenderer(sir);
-    }
-  }, [canvasRef.current, simulation]);
+  // useEffect(() => {
+  //   if (canvasRef.current && simulation) {
+  //     const sir = new SimulationInspectorRenderer(simulation);
+  //     setRenderer(sir);
+  //   }
+  // }, [canvasRef.current, simulation]);
 
   useEffect(() => {
     if (!canvasRef.current) {
@@ -39,26 +42,36 @@ export const useSimulationInspectorRenderer = (simulation: Simulation | null): E
     return () => canvasRef.current?.removeEventListener('contextmenu', contextMenuHandler)
   })
 
-  const createEntity = (position = Vector.zero) => {
+  const contextMenuHandler = async (event: MouseEvent) => {
     if (!renderer) {
       return;
     }
 
-    const entity = renderer.simulation.scene.instantEntityInstantiation(new Entity())!;
-    entity.components.add(MeshRenderer);
-    entity.transform.position = position;
+    renderer.mouseDown = false;
+
+    const sceneCoordinates = renderer.canvasPointToCoordinates(renderer.inspector.optic, new Vector(event.offsetX, event.offsetY));
+
+    const entityCreationCmp = newEntityContextMenuPrebuild(renderer!, sceneCoordinates);
+    
+
+    const payload = await openContextMenu([
+      {
+        label: 'New Entity',
+        submenu: entityCreationCmp.template,
+      },
+    ]);
+
+    entityCreationCmp.handle(payload);
+
+    // const response = await window.electron.ipcRenderer.openSIRContextMenu();
+    // if (response && renderer) {
+    //   const coords = renderer.canvasPointToCoordinates(renderer.inspector.optic, new Vector(event.offsetX, event.offsetY));
+    //   createEntity(coords);
+    // }
   }
 
-  const contextMenuHandler = async (event: MouseEvent) => {
-    if (renderer) {
-      renderer.mouseDown = false
-    }
-
-    const response = await window.electron.ipcRenderer.openSIRContextMenu();
-    if (response && renderer) {
-      const coords = renderer.canvasPointToCoordinates(renderer.inspector.optic, new Vector(event.offsetX, event.offsetY));
-      createEntity(coords);
-    }
+  if (renderer) {
+    renderer.renderFrame = !(window as any).crontext_editor_fullscreen
   }
 
   const render = () => (
@@ -91,12 +104,12 @@ export const useSimulationInspectorRenderer = (simulation: Simulation | null): E
             Save scene
         </button>
       </nav>
-      <canvas
+      {/* <canvas
         tabIndex={2}
         ref={canvasRef} 
         width={1920 / 2.8}
         height={1080 / 2.8}
-      />
+      /> */}
     </section>
   )
 

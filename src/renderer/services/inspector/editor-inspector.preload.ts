@@ -1,3 +1,9 @@
 import './custom-inspectors/entity-transform.inspector';
 import './custom-inspectors/point-light.inspector';
 import './custom-inspectors/spot-light.inspector';
+import './custom-inspectors/camera.inspector';
+import './custom-inspectors/mesh-renderer.inspector';
+import './custom-inspectors/rigidbody.inspector';
+import './custom-inspectors/polygon-collider.inspector';
+import './custom-inspectors/directional-gravity.inspector';
+import './custom-inspectors/point-gravity.inspector';
