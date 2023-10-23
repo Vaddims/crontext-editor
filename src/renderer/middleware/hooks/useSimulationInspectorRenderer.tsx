@@ -51,7 +51,7 @@ export const useSimulationInspectorRenderer = (simulation: Simulation | null): E
 
     const sceneCoordinates = renderer.canvasPointToCoordinates(renderer.inspector.optic, new Vector(event.offsetX, event.offsetY));
 
-    const entityCreationCmp = newEntityContextMenuPrebuild(renderer!, sceneCoordinates);
+    const entityCreationCmp = newEntityContextMenuPrebuild(renderer!, renderer!.inspector.optic, sceneCoordinates);
     
 
     const payload = await openContextMenu([

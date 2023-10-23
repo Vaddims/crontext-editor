@@ -11,9 +11,11 @@ import '../../../crontext-components';
 import RendererDisplayer from 'renderer/components/RendererDisplayer';
 import { nativeImage } from 'electron';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowsMaximize, faArrowsUpDownLeftRight, faExpand, faGlobe, faMapPin, faPause, faPlay, faRotate, faSidebar, faTextSize } from '@danieloi/pro-light-svg-icons';
+import { faArrowsMaximize, faArrowsUpDownLeftRight, faBlockBrick, faBlockBrickFire, faCode, faCodeMerge, faExpand, faFileCode, faGlobe, faMapPin, faPause, faPlay, faRotate, faSidebar, faTextSize } from '@danieloi/pro-light-svg-icons';
 import { faCompassDrafting } from '@fortawesome/free-solid-svg-icons';
 import AppTitleBar from 'renderer/layouts/AppTitleBar';
+import DialogModal from 'renderer/components/DialogModal';
+import { asyncTimeout } from 'renderer/utilities/promises.util';
 
 export interface EditorContextState {
   simulation: Simulation;
@@ -59,18 +61,6 @@ const Editor: React.FC = () => {
 
   const [simulationRenderer] = useState(instantiateSimulationRenderer);
   const [simulationInspectorRenderer] = useState(instantiateSimulationInspectorRenderer(simulationRenderer));
-
-  // useEffect(() => {
-  //   const handler = () => {
-  //     console.log('now')
-  //     forceRerender();
-  //   }
-
-  //   simulationRenderer.simulation.scene.subs.add(handler);
-  //   return () => {
-  //     simulationRenderer.simulation.scene.subs.delete(handler)
-  //   };
-  // }, []);
 
   useEffect(() => {
     if (simulationInspectorRenderer) {
@@ -179,6 +169,36 @@ const Editor: React.FC = () => {
     } as const;
   }
 
+  const [ recompiling, setRecompiling ] = useState(false);
+  const [ recompilationProgress, setRecompilationProgress ] = useState(0);
+  const [ compilationMessage, setCompilationMessage ] = useState('Initializing');
+  const recompileRenderer = async () => {
+    if (recompiling) {
+      return;
+    }
+
+    setRecompiling(true);
+
+    const resultResponse = await window.electron.ipcRenderer.compileEditorRederer((progressResponse) => {
+      setRecompilationProgress(progressResponse.progress ?? 1);
+      if (progressResponse.progressMessage) {
+        setCompilationMessage(progressResponse.progressMessage);
+      }
+    });
+
+    setRecompilationProgress(1);
+    setCompilationMessage('Applying');
+
+    await asyncTimeout(1000);
+   
+    setRecompiling(false);
+    if (resultResponse.compiledSuccessfuly) {
+      location.reload();
+    } else {
+      alert(`An error has occured while recompiling renderer: ${resultResponse.error ?? 'Unkown error'}`);
+    }
+  }
+
   return (
     <main className='editor'>
       <header className='app sidebar-header' aria-hidden={isSidebarCollapsed}>
@@ -197,7 +217,14 @@ const Editor: React.FC = () => {
 
       <section className='content'>
         <AppTitleBar>
-          <div></div>
+          <div className='general-controls'>
+            <FontAwesomeIcon
+              icon={faCodeMerge} 
+              onClick={recompileRenderer} 
+              className='recompile-renderer-action'
+              title='Recompile editor renderer'
+            />
+          </div>
           <div className='simulation-controls'>
             <FontAwesomeIcon icon={faPause} size='lg' className='simulation-control pause' title='Pause Simulation' />
             <FontAwesomeIcon icon={faPlay} size='lg' className='simulation-control play' title='Start Simulation' onClick={handleSimulationPlay} />
@@ -206,6 +233,24 @@ const Editor: React.FC = () => {
         </AppTitleBar>
 
         <main>
+          {recompiling && (
+            <DialogModal isOpen={recompiling} className='compilation-modal'>
+            <header>
+              <h2>Editor recompilation</h2>
+              <span>Compiling and applying project code to the editor.<br />It may take several seconds...</span>
+            </header>
+            <div className='compilation-progress'>
+              <span>{compilationMessage}</span>
+              <div className='bar'>
+                <FontAwesomeIcon icon={faFileCode} className='icon left' size='lg' data-checked={recompilationProgress > 0} />
+                <div className='progress' style={{
+                  width: `${Math.round(recompilationProgress * 100)}%`
+                }} />
+                <FontAwesomeIcon icon={faBlockBrick} className='icon right' size='lg' data-checked={recompilationProgress === 1} />
+              </div>
+            </div>
+          </DialogModal>
+          )}
           <RendererDisplayer
             bigpicture={(window as any).canvas_bigpicture}
             className='editor-visual-component renderer simulation-renderer' 

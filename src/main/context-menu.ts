@@ -1,4 +1,3 @@
-import { nanoid } from "nanoid";
 import { ContextMenuItemConstructorOptions } from "types/context-menu.type";
 
 export const buildElectronMenuOptions = (

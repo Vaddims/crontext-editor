@@ -1,8 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import MultiItemInputField, { MultiItemInputDescriptor } from "../../components/inputField/MultiItemInputField"
 import useInputField, { InputFieldError, InputFieldUtils } from "./useInputField";
-import useTextInputField from "./useTextInputField";
-import { Permission } from "../../services/permission.service";
 
 
 interface MultiItemInputFieldOptions {

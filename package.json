@@ -37,11 +37,18 @@
     "build": "concurrently \"npm run build:main\" \"npm run build:renderer\"",
     "build:main": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.main.prod.ts",
     "build:renderer": "cross-env NODE_ENV=production TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.prod.ts",
-    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
+    "build:renderer:ddl": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.dev.dll.ts",
+    "postinstall": "ts-node .erb/scripts/check-native-dep.js && electron-builder install-app-deps && concurrently \"npm run build:renderer:ddl\" \"\"",
     "lint": "cross-env NODE_ENV=development eslint . --ext .js,.jsx,.ts,.tsx",
     "package": "ts-node ./.erb/scripts/clean.js dist && npm run build && electron-builder build --publish never",
     "bundle": "npm run build && npm run package",
     "rebuild": "electron-rebuild --parallel --types prod,dev,optional --module-dir release/app",
+
+    
+    "start:static": "cross-env NODE_ENV=development NODE_ENV_DEV=static TS_NODE_DEBUG=false ts-node ./.erb/scripts/check-port-in-use.js && concurrently \"npm run start:preload\" \"npm run start:static:main\"",
+    "start:static:main": "cross-env NODE_ENV=development NODE_ENV_DEV=static electronmon -r ts-node/register/transpile-only .",
+    "build:static:renderer:ddl": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.renderer.stdev.dll.ts",
+    
     "start": "TS_NODE_DEBUG=false ts-node ./.erb/scripts/check-port-in-use.js && npm run start:renderer",
     "start:main": "cross-env NODE_ENV=development electronmon -r ts-node/register/transpile-only .",
     "start:preload": "cross-env NODE_ENV=development TS_NODE_TRANSPILE_ONLY=true webpack --config ./.erb/configs/webpack.config.preload.dev.ts",

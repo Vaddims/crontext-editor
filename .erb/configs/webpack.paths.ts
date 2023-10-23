@@ -8,6 +8,9 @@ const srcPath = path.join(rootPath, 'src');
 const srcMainPath = path.join(srcPath, 'main');
 const srcRendererPath = path.join(srcPath, 'renderer');
 
+const erbPath = path.join(rootPath, '.erb');
+const erbScriptPath = path.join(erbPath, 'scripts');
+
 const releasePath = path.join(rootPath, 'release');
 const appPath = path.join(releasePath, 'app');
 const appPackagePath = path.join(appPath, 'package.json');
@@ -26,6 +29,8 @@ export default {
   srcPath,
   srcMainPath,
   srcRendererPath,
+  erbPath,
+  erbScriptPath,
   releasePath,
   appPath,
   appPackagePath,

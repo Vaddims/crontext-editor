@@ -1,11 +1,11 @@
+import useInputField, { InputFieldUtils } from "renderer/hooks/inputField/useInputField";
 import TextareaInputField from "../../components/TextareaInputField";
-import useInputField, { InputField } from "./useInputField";
 
 interface TextareaInputFieldOptions {
   readonly label?: string;
 }
 
-export type AppTextareaInputHook = InputField.GenericHook<TextareaInputFieldOptions, {}, string, string>;
+export type AppTextareaInputHook = InputFieldUtils.GenericHook<TextareaInputFieldOptions, {}, string, string>;
 const useTextareaInputField: AppTextareaInputHook = (options) => {
   const inputField = useInputField({
     validate: (data) => data,
@@ -31,7 +31,7 @@ const useTextareaInputField: AppTextareaInputHook = (options) => {
   }
 
   const mixedValueStateClickHandler = () => {
-    inputField.setMixedValuesState((state) => {
+    inputField.setMixedValuesState((state: any) => {
       const nextState = !state;
 
       if (nextState) {
@@ -53,19 +53,20 @@ const useTextareaInputField: AppTextareaInputHook = (options) => {
   const shouldAllowInputRestore = inputField.value !== inputField.anchor;
   const shouldAllowInputClear = inputField.value.trim() !== '';
 
-  const placeholder = inputField.mixedValuesState ? 'Using existing values (Click to modify)' : options.placeholder; 
+  const placeholder = inputField.mixedValuesState ? 'Using existing values (Click to modify)' : ''; 
 
   const render = () => (
     <TextareaInputField
       label={label ?? ''}
-      value={inputField.value}
       onInputRestore={shouldAllowInputRestore && restoreValue}
       onInputClear={shouldAllowInputClear && clearValue}
-      onChange={inputChangeHandler}
-      placeholder={placeholder}
-      onClick={inputClickHandler}
 
-      {...inputField.inputFieldComponentProps}
+      inputProps={{
+        value: inputField.value,
+        onChange: inputChangeHandler,
+        placeholder: placeholder,
+        onClick: inputClickHandler,
+      }}
 
       mixedValuesState={inputField.mixedValuesState}
       onMixedValueStateClick={mixedValueStateClickHandler}

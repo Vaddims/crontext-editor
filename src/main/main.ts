@@ -1,20 +1,11 @@
-/* eslint global-require: off, no-console: off, promise/always-return: off */
-
-/**
- * This module executes inside of electron's main process. You can start
- * electron renderer process from here and communicate with the other processes
- * through IPC.
- *
- * When running `npm run build` or `npm run build:main`, this file is compiled to
- * `./src/main.js` using webpack. This gives us some performance wins.
- */
 import path from 'path';
 import { app, BrowserWindow, shell, ipcMain, ipcRenderer, systemPreferences } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { getAccentColor, openComponentInspectEditorContextMenu, openRendererContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
+import { IpcEditorRendererCompiler, getAccentColor, openComponentInspectEditorContextMenu, openRendererContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
+import { EditorRendererCompilation as ERC } from './workers/editor.renderer-compilation.types';
 
 class AppUpdater {
   constructor() {
@@ -52,9 +43,9 @@ const installExtensions = async () => {
 };
 
 const createWindow = async () => {
-  if (isDebug) {
-    await installExtensions();
-  }
+  // if (isDebug) {
+  //   await installExtensions();
+  // }
 
   const RESOURCES_PATH = app.isPackaged
     ? path.join(process.resourcesPath, 'assets')
@@ -66,14 +57,13 @@ const createWindow = async () => {
   
   mainWindow = new BrowserWindow({
     show: false,
-    width: 1024,
-    height: 728,
+    width: 1500,
+    height: 1000,
     titleBarStyle: 'hidden',
     icon: getAssetPath('icon.png'),
     frame: false,
     vibrancy: 'sidebar',
     trafficLightPosition: { x: 20, y: 17.5 },
-    // backgroundColor: 'red',
     webPreferences: {
       // devTools: false,
       nodeIntegration: true,
@@ -86,7 +76,6 @@ const createWindow = async () => {
     },
   });
 
-  mainWindow.loadURL(resolveHtmlPath('index.html'));
   mainWindow.showInactive()
   // mainWindow.webContents.openDevTools();
 
@@ -131,19 +120,9 @@ const createWindow = async () => {
   // Remove this if your app does not use auto updates
   // eslint-disable-next-line
   // new AppUpdater();
+
+  return mainWindow;
 };
-
-/**
- * Add event listeners...
- */
-
-app.on('window-all-closed', () => {
-  // Respect the OSX convention of having the application in memory even
-  // after all windows have been closed
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
 
 const appNotFocusedColor = 'rgb(33, 34, 35)';
 const transparentColor = 'rgba(0, 0, 0, 0)';
@@ -158,37 +137,85 @@ app.on('browser-window-focus', () => {
 
 app.on('web-contents-created', () => {
   mainWindow?.setBackgroundColor(transparentColor);
-})
+});
 
-app
-  .whenReady()
-  .then(async () => {
-    // do for every window
-    mainWindow?.setBackgroundColor(appNotFocusedColor)
-    mainWindow?.webContents.addListener('dom-ready', () => {
-      const accentColor = systemPreferences.getAccentColor();
-      // mainWindow?.setBackgroundColor(appNotFocusedColor);
-    })
+(async () => {
+  await app.whenReady();
 
-    ipcMain.handle('read-json', (event, path) => readJson(path));
-    ipcMain.handle('write-json', (event, path, data) => writeJson(path, data));
-    ipcMain.handle('open-sir-context-menu', (event) => openSimulationInspectorRendererContextMenu(mainWindow!));
-    ipcMain.handle('open-cie-context-menu', (event) => openComponentInspectEditorContextMenu(mainWindow!));
-    ipcMain.handle('open-renderer-context-menu', (_, menuOptions) => openRendererContextMenu(mainWindow!, menuOptions));
-    ipcMain.handle('accent-color', () => getAccentColor());
-    ipcMain.handle('is-window-fullscreen', () => {
-      return mainWindow?.fullScreen || false;
-    });
+  applyIpcHandlers();
 
-    await createWindow();
+  const shouldPrecompileRenderer = process.env.NODE_ENV_DEV === 'static';
 
-    // mainWindow?.setBackgroundColor(appNotFocusedColor)
+  if (shouldPrecompileRenderer) {
+    const compiledSuccessfuly = await IpcEditorRendererCompiler.compile();
+    if (compiledSuccessfuly) {
+      const window = await createWindow();
+      window.loadURL(resolveHtmlPath('index.html'));
+    } else {
+      console.warn('Renderer compilation error');
+    }
+  } else {
+    const window = await createWindow();
+    window.loadURL(resolveHtmlPath('index.html'));
+  }
+})();
 
+app.on('window-all-closed', () => {
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
+});
 
-    app.on('activate', () => {
-      // On macOS it's common to re-create a window in the app when the
-      // dock icon is clicked and there are no other windows open.
-      if (mainWindow === null) createWindow();
-    });
-  })
-  .catch(console.log);
+app.on('activate', () => {
+  if (mainWindow === null) createWindow();
+});
+
+function applyIpcHandlers() {
+  ipcMain.handle('read-json', (_, path) => readJson(path));
+  ipcMain.handle('write-json', (_, path, data) => writeJson(path, data));
+  ipcMain.handle('compile-renderer', async (event) => {
+    const sender = event.sender;
+
+    const compilationProgress = IpcEditorRendererCompiler.compileWithProgress();
+    let iterationResponse: IteratorResult<ERC.Response.Progress, ERC.Response.Result>;
+
+    do {
+      iterationResponse = await compilationProgress.next();
+      sender.send('compilation-progress', iterationResponse.value);
+    } while (!iterationResponse.done);
+  
+    sender.send('compilation-result', iterationResponse.value);
+    return iterationResponse.value;
+  });
+
+  ipcMain.handle('accent-color', () => getAccentColor());
+
+  ipcMain.handle('is-window-fullscreen', (event) => BrowserWindow.fromWebContents(event.sender)?.fullScreen || false);
+
+  ipcMain.handle('open-sir-context-menu', (event) => {
+    const targetWindow = BrowserWindow.fromWebContents(event.sender);
+    if (!targetWindow) {
+      return;
+    }
+
+    openSimulationInspectorRendererContextMenu(targetWindow);
+  });
+
+  ipcMain.handle('open-cie-context-menu', (event) => {
+    const targetWindow = BrowserWindow.fromWebContents(event.sender);
+    if (!targetWindow) {
+      return;
+    }
+
+    openComponentInspectEditorContextMenu(targetWindow);
+  });
+
+  ipcMain.handle('open-renderer-context-menu', (event, menuOptions) => {
+    const targetWindow = BrowserWindow.fromWebContents(event.sender);
+    if (!targetWindow) {
+      return;
+    }
+
+    openRendererContextMenu(targetWindow, menuOptions)
+  });
+}

@@ -24,4 +24,4 @@ window.addEventListener('focus', () => {
 
 window.electron.ipcRenderer.on('fullscreen-change' as any, (isFullscreen: any) => {
   document.body.setAttribute('data-fullscreen', isFullscreen.toString());
-})
+});

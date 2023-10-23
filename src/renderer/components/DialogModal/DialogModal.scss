@@ -1,0 +1,20 @@
+@use 'src/renderer/App.scss';
+
+dialog {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  outline: none;
+  background-color: App.$background-color;
+  border: 2px solid rgb(71, 71, 71);
+  border-radius: 10px;
+  padding: 1rem 2rem;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 0 20px 0px black;
+
+  &::backdrop {
+    backdrop-filter: blur(2px);
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+}

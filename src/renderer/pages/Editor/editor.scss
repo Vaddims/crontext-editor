@@ -125,6 +125,86 @@
     display: flex;
     flex-direction: column;
 
+    .compilation-modal {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+
+      header {
+        display: flex;
+        flex-direction: column;
+        gap: .25rem;
+
+        span {
+          color: grey;
+        }
+      }
+      
+      .compilation-progress {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        gap: .2rem;
+
+        span {
+          text-transform: capitalize;
+          margin-left: 3rem;
+          font-weight: 600;
+          color: grey;
+        }
+
+        .bar {
+          $bgcr: rgb(46, 46, 46);
+          position: relative;
+          width: 100%;
+          height: .3rem;
+          background-color: $bgcr;
+          border-radius: 100px;
+          display: flex;
+          flex-direction: column;
+          margin-bottom: 20px;
+          $intmgn: 1.5rem;
+          padding-inline: calc($intmgn * 1.5);
+          box-sizing: border-box;
+
+          .icon {
+            position: absolute;
+            background-color: App.$background-color;
+            border: 2px solid $bgcr;
+            width: fit-content;
+            aspect-ratio: 1;
+            padding: .5rem;
+            border-radius: 100px;
+            transform: translateY(calc(-50% + .15rem));
+            transition: border .2s ease;
+            z-index: 100;
+            width: calc($intmgn);
+            height: calc($intmgn);
+
+
+            &[data-checked=true] {
+              border: 2px solid App.$system-accent-color;
+            }
+
+            &.left {
+              left: 0;
+            }
+
+            &.right {
+              right: 0;
+            }
+          }
+
+          .progress {
+            border-radius: 100px;
+            background-color: App.$system-accent-color;
+            height: 100%;
+            transition: width .2s ease;
+          }
+        }
+      }
+    }
+
     & > .app.title-bar {
       position: relative;
       background-color: App.$background-color;
@@ -138,7 +218,7 @@
       * {
         -webkit-app-region: no-drag;
       }
-      
+  
       & > .controls {
         position: absolute;
         max-width: calc(100vw - 125px);
@@ -148,12 +228,50 @@
         box-sizing: border-box;
         user-select: none;
         -webkit-app-region: drag;
-      }
-  
-      & > .controls {
+
         display: flex;
         flex-direction: row;
         justify-content: space-between;
+
+        .general-controls {
+          margin-left: .5rem;
+          -webkit-app-region: drag;
+          align-items: center;
+          display: flex;
+          flex-direction: row;
+
+          & > .recompile-renderer-action {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: .25rem;
+            padding: 5px 10px;
+            border-radius: 5px;
+        
+            user-select: none;
+            -webkit-app-region: no-drag;
+
+            span {
+              color: grey;
+            }
+        
+            &:hover {
+              background-color: App.$button-hover-color;
+            }
+        
+            &:active {
+              background-color: App.$button-active-color;
+
+              span {
+                color: white;
+              }
+        
+              path {
+                fill: App.$icon-active-color;
+              }
+            }
+          }
+        }
   
         .simulation-controls {
           align-items: center;
