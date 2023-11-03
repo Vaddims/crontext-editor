@@ -7,7 +7,9 @@ export const buildElectronMenuOptions = (
   const buildMenuItemOptions = (menuOptions: ContextMenuItemConstructorOptions<unknown>) => {
     const electronMenuOptions: Electron.MenuItemConstructorOptions = {
       ...menuOptions,
-      click: () => resolve(menuOptions.payload),
+      click: () => {
+        resolve(menuOptions.payload);
+      },
     };
 
     if (menuOptions.submenu) {

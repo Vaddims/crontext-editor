@@ -1,4 +1,4 @@
-import { Color } from "crontext";
+import { Color } from 'crontext-engine';
 import InputField, { InputFieldCommonProps } from "../InputField";
 import './color-input-field.scss';
 import { splitCaseMixedString } from "renderer/utilities/text.utils";

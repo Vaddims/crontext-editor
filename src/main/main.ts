@@ -112,7 +112,6 @@ const createWindow = async () => {
   });
 
   systemPreferences.on('accent-color-changed', (event, newColor) => {
-    console.log(event, newColor);
     // mainWindow.webContents.send('accentColor', newColor);
   });
 
@@ -210,12 +209,12 @@ function applyIpcHandlers() {
     openComponentInspectEditorContextMenu(targetWindow);
   });
 
-  ipcMain.handle('open-renderer-context-menu', (event, menuOptions) => {
+  ipcMain.handle('open-renderer-context-menu', async (event, menuOptions) => {
     const targetWindow = BrowserWindow.fromWebContents(event.sender);
     if (!targetWindow) {
       return;
     }
 
-    openRendererContextMenu(targetWindow, menuOptions)
+    return await openRendererContextMenu(targetWindow, menuOptions)
   });
 }

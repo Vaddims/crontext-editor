@@ -1,4 +1,4 @@
-import { PointGravity } from "crontext";
+import { PointGravity } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faArrowsToCircle } from "@danieloi/pro-light-svg-icons";
 

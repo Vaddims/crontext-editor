@@ -1,4 +1,4 @@
-import { Renderer, SimulationInspectorRenderer, Vector } from "crontext";
+import { Renderer, SimulationInspectorRenderer, Vector } from 'crontext-engine';
 import { Fragment, useEffect, useRef, useState } from "react";
 import { newEntityContextMenuPrebuild } from "renderer/services/context-menu/prebuilds/new-entity.cmp";
 

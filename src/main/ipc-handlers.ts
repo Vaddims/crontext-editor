@@ -76,7 +76,9 @@ export const openRendererContextMenu = async (window: BrowserWindow, options: Co
     menu.popup({ window });
 
     menu.addListener('menu-will-close', () => {
-      setTimeout(() => resolve(void 0));
+      setTimeout(() => {
+        resolve(void 0)
+      });
     })
   });
 }

@@ -1,4 +1,4 @@
-import { Camera } from "crontext";
+import { Camera } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faCamera, faCameraMovie } from "@danieloi/pro-light-svg-icons";
 

@@ -1,4 +1,4 @@
-import { PointLight } from "crontext";
+import { PointLight } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faLightbulb } from "@fortawesome/free-solid-svg-icons";
 import { faLightbulbOn } from "@danieloi/pro-light-svg-icons";

@@ -3,7 +3,7 @@ import { EditorContext } from 'renderer/pages/Editor';
 import './scene-inspector.scss';
 import SceneInspectorItem from '../SceneInspectorItem';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
-import { Entity } from 'crontext';
+import { Entity } from 'crontext-engine';
 
 const SceneInspector = () => {
   const editorContext = useContext(EditorContext);

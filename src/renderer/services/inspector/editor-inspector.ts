@@ -1,5 +1,5 @@
 import { faFileCode } from "@danieloi/pro-light-svg-icons";
-import { Color, Component, Engine, EntityTransform, Shape, Vector } from "crontext";
+import { Color, Component, Engine, EntityTransform, Shape, Vector } from 'crontext-engine';
 import { Transformator } from "objectra";
 import { Constructor } from "objectra/dist/types/util.types";
 import { isES3Primitive } from "objectra/dist/utils";
@@ -252,7 +252,7 @@ export class EditorInspector<T extends ComponentLike = ComponentLike> {
 
   public static readonly customEditor = new Map<Constructor<ComponentLike>, Constructor>();
   public static RegisterForComponent(componentConstructor: Constructor<ComponentLike>) {
-    return (constructor: Constructor) => {
+    return (constructor: Constructor, a: any) => {
       EditorInspector.customEditor.set(componentConstructor, constructor);
     }
   }

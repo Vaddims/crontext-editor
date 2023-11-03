@@ -1,4 +1,4 @@
-import { Camera, Entity, Light, MeshRenderer, Optic, PointLight, PolygonCollider, Renderer, Vector } from "crontext";
+import { Camera, Entity, Light, MeshRenderer, Optic, PointLight, PolygonCollider, Renderer, Vector } from 'crontext-engine';
 import { ContextMenuItemConstructorOptions, ContextMenuPrebuild } from "types/context-menu.type";
 
 enum EntityCreationType {

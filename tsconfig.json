@@ -1,22 +1,21 @@
 {
   "compilerOptions": {
     "incremental": true,
-    "target": "esnext",
+    "target": "es2022",
     "module": "commonjs",
-    "lib": ["dom", "esnext"],
+    "lib": ["dom", "es2022"],
     "jsx": "react-jsx",
     "strict": true,
     "sourceMap": true,
-    "baseUrl": "./src",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
-    "experimentalDecorators": true,
-    "emitDecoratorMetadata": true,
     "allowJs": true,
+    "outDir": ".erb/dll",
+    "baseUrl": "./src",
     "noEmitOnError": true,
-    "outDir": ".erb/dll"
+    "useDefineForClassFields": true,
   },
   "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
 }

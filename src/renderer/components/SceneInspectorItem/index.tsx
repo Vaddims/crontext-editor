@@ -1,4 +1,4 @@
-import { Entity } from "crontext";
+import { Entity } from 'crontext-engine';
 import './scene-inspector-item.scss';
 import { useContext, useEffect, useState, Fragment } from "react";
 import { EditorContext } from "renderer/pages/Editor";

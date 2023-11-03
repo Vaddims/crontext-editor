@@ -1,4 +1,4 @@
-import { Rigidbody } from "crontext";
+import { Rigidbody } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faHillRockslide } from "@danieloi/pro-light-svg-icons";
 

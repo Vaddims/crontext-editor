@@ -1,13 +1,12 @@
 import { useSimulationRenderer } from 'renderer/middleware/hooks/useSimulationRenderer';
 import './editor.scss';
-import { Entity, MeshRenderer, Simulation, SimulationInspectorRenderer, SimulationRenderer, Space, TransformMode, Vector } from 'crontext';
+import { Entity, MeshRenderer, Simulation, SimulationInspectorRenderer, SimulationRenderer, Space, TransformMode, Vector } from 'crontext-engine';
 import { createContext, useEffect, useMemo, useState } from 'react';
 import { useSimulationInspectorRenderer } from 'renderer/middleware/hooks/useSimulationInspectorRenderer';
 import { Objectra } from 'objectra';
 import SceneInspector from 'renderer/components/SceneInspector';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
 import Inspector from 'renderer/components/Inspector';
-import '../../../crontext-components';
 import RendererDisplayer from 'renderer/components/RendererDisplayer';
 import { nativeImage } from 'electron';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';

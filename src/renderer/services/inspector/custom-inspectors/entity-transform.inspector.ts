@@ -1,4 +1,4 @@
-import { EntityTransform } from "crontext";
+import { EntityTransform } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faArrowsUpDownLeftRight } from "@danieloi/pro-light-svg-icons";
 

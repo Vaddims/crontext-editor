@@ -1,4 +1,4 @@
-import { SimulationRenderer, Vector } from "crontext";
+import { SimulationRenderer, Vector } from 'crontext-engine';
 import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { EditorContext } from "renderer/pages/Editor";
 

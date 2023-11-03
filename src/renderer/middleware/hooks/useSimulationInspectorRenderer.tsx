@@ -1,4 +1,4 @@
-import { Entity, MeshRenderer, Simulation, SimulationInspectorRenderer, SimulationRenderer, Space, TransformMode, Vector } from "crontext";
+import { Entity, MeshRenderer, Simulation, SimulationInspectorRenderer, SimulationRenderer, Space, TransformMode, Vector } from 'crontext-engine';
 import { Objectra } from "objectra";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { openContextMenu } from "renderer/services/context-menu/context-menu";

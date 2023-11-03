@@ -1,4 +1,4 @@
-import { DirectionalGravity } from "crontext";
+import { DirectionalGravity } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faArrowsDownToLine, faArrowsToLine } from "@danieloi/pro-light-svg-icons";
 

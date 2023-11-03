@@ -1,6 +1,6 @@
 import { EditorInspector } from "renderer/services/inspector/editor-inspector";
 import { RendererEntryProps } from "..";
-import { Color } from "crontext";
+import { Color } from 'crontext-engine';
 import ColorInputField from "renderer/components/inputField/ColorInputField";
 
 const ColorInputRenderer: React.FC<RendererEntryProps<EditorInspector.HierarchyEntry.ColorInput>> = (props) => {

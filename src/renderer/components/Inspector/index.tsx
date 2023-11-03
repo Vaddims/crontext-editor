@@ -2,7 +2,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { EditorContext } from 'renderer/pages/Editor';
 import InspectorModule from '../InspectorModule';
-import { Component, Engine, Entity } from 'crontext';
+import { Component, Engine, Entity } from 'crontext-engine';
 import './inspector.scss';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
 import useSelectInputField from 'renderer/hooks/inputField/useSelectInputField';

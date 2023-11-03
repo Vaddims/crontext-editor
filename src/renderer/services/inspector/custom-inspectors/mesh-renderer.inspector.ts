@@ -1,4 +1,4 @@
-import { MeshRenderer } from "crontext";
+import { MeshRenderer } from 'crontext-engine';
 import { EditorInspector } from "../editor-inspector";
 import { faDrawPolygon } from "@danieloi/pro-light-svg-icons";
 

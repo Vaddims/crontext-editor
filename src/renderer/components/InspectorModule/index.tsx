@@ -1,4 +1,4 @@
-import { Color, Component, EntityTransform } from 'crontext';
+import { Color, Component, EntityTransform } from 'crontext-engine';
 import './inspector-module.scss';
 import { IconDefinition, faAngleRight, faArrowRight, faEllipsisVertical, faFileCode, faQuestion } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -6,18 +6,8 @@ import { useContext, useEffect, useState } from 'react';
 import { useComponentForceRerender } from 'renderer/middleware/hooks/useComponentForceRerender';
 import { EditorInspector } from 'renderer/services/inspector/editor-inspector';
 import '../../services/inspector/editor-inspector.preload';
-import '../../services/inspector/custom-inspectors/entity-transform.inspector';
 import { splitCaseMixedString } from 'renderer/utilities/text.utils';
 import { InspectorContext } from '../Inspector';
-import ColorInputField from '../inputField/ColorInputField';
-import useSelectInputField, { defaultSelectInputFieldOption } from 'renderer/hooks/inputField/useSelectInputField';
-import useTextInputField from 'renderer/hooks/inputField/useTextInputField';
-import { InputFieldUtils } from 'renderer/hooks/inputField/useInputField';
-import CheckboxField from '../inputField/CheckboxField';
-import SelectInputRenderer from './SelectInputRenderer';
-import GenericInputRenderer from './GenericInputRenderer';
-import LabelRenderer from './LabelRenderer';
-import ColorInputRenderer from './ColorInputRenderer';
 import EditorModuleTreeRenderer from './EditorModuleTreeRenderer';
 import { Constructor } from 'objectra/dist/types/util.types';
 
