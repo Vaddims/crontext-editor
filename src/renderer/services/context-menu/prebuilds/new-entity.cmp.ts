@@ -3,7 +3,9 @@ import { ContextMenuItemConstructorOptions, ContextMenuPrebuild } from "types/co
 
 enum EntityCreationType {
   Blank = 'CREATE:ENTITY:BLANK',
-  Common = 'CREATE:ENTITY:COMMON',
+  Visual = 'CREATE:ENTITY:VISUAL',
+  Collider = 'CREATE:ENTITY:COLLIDER',
+  VisualCollider = 'CREATE:ENTITY:VISUALCOLLIDER',
   Camera = 'CREATE:ENTITY:CAMERA',
   Light = 'CREATE:ENTITY:LIGHT',
 }
@@ -15,8 +17,16 @@ export const newEntityContextMenuPrebuild: ContextMenuPrebuild<EntityCreationTyp
       payload: EntityCreationType.Blank,
     },
     {
+      label: 'Visual',
+      payload: EntityCreationType.Visual,
+    },
+    {
+      label: 'Collider',
+      payload: EntityCreationType.Collider,
+    },
+    {
       label: 'Common',
-      payload: EntityCreationType.Common,
+      payload: EntityCreationType.VisualCollider,
     },
     {
       label: 'Camera',
@@ -35,7 +45,7 @@ export const newEntityContextMenuPrebuild: ContextMenuPrebuild<EntityCreationTyp
         return;
       }
 
-      const entity = renderer.simulation.scene.instantEntityInstantiation(new Entity())!;
+      const entity = renderer.simulation.scene.instantiateEntity(new Entity()).resolve() as Entity;
       const sceneCoordinates = renderer.canvasPointToCoordinates(optic, eventCoordinates);
       entity.transform.position = sceneCoordinates;
 
@@ -44,19 +54,30 @@ export const newEntityContextMenuPrebuild: ContextMenuPrebuild<EntityCreationTyp
           entity.name = 'Blank';
           return entity;
 
-        case EntityCreationType.Common:
-          renderer.simulation.scene.instantResolve(entity.components.add(MeshRenderer));
-          renderer.simulation.scene.instantResolve(entity.components.add(PolygonCollider));
+        case EntityCreationType.Visual:
+          entity.name = 'Visual';
+          entity.components.add(MeshRenderer).resolve();
+          break;
+
+        case EntityCreationType.Collider:
+          entity.name = 'Collider';
+          entity.components.add(PolygonCollider).resolve();
+          break;
+
+        case EntityCreationType.VisualCollider:
+          entity.name = 'Visual Collider';
+          entity.components.add(MeshRenderer).resolve();
+          entity.components.add(PolygonCollider).resolve();
           break;
         
         case EntityCreationType.Camera:
           entity.name = 'Camera';
-          renderer.simulation.scene.instantResolve(entity.components.add(Camera));
+          entity.components.add(Camera);
           break;
 
         case EntityCreationType.Light:
           entity.name = 'Light';
-          renderer.simulation.scene.instantResolve(entity.components.add(PointLight));
+          entity.components.add(PointLight).resolve();
       }
     },
   }

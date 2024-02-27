@@ -33,23 +33,27 @@ const tryLoadLocallySavedScene = async (simulation: Simulation) => {
   try {
     const sceneModel = await window.electron.ipcRenderer.readJson('scene');
     if (sceneModel) {
-      const scene = Objectra.fromModel(sceneModel).compose();
-      const loadedScene = simulation.loadScene(scene);
-      loadedScene['recacheSpatialPartition']();
+      const objectraScene = Objectra.fromModel(sceneModel);
+      const scene = objectraScene.compose();
+      simulation.loadScene(scene);
+      simulation.start();
     }
-  } catch {}
+  } catch (error) {
+    // alert('no scene');
+  }
 }
 
 const instantiateSimulationRenderer = () => {
   const simulationRenderer = new SimulationRenderer();
   tryLoadLocallySavedScene(simulationRenderer.simulation);
-  // simulationRenderer.simulation.start();
   return simulationRenderer;
 }
 
 const instantiateSimulationInspectorRenderer = (simulationRenderer: SimulationRenderer) => {
-  const simulationInspectorRenderer = new SimulationInspectorRenderer(simulationRenderer.simulation)
+  const simulationInspectorRenderer = new SimulationInspectorRenderer(simulationRenderer.simulation);
   // simulationInspectorRenderer.renderFrame = false;
+  // simulationInspectorRenderer.simulation.updateOnFrameChange = false;
+  // simulationInspectorRenderer.simulation.updatesPerSecond = 2;
   return simulationInspectorRenderer;
 }
 

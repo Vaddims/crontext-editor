@@ -29,7 +29,7 @@ const ComponentRepresenter = (props: { componentConstructor: Constructor<Compone
   const s = useContext(EditorContext);
 
   const handleRepresenterClick = () => {
-    entity.scene!.instantResolve(entity.components.add(props.componentConstructor))
+    entity.components.add(props.componentConstructor).resolve();
     s.forceRerender();
   }
 

@@ -44,7 +44,7 @@ const SceneInspector = () => {
     const scene = editorContext.simulationInspectorRenderer.simulation.scene;
     const selectedEntities = inspector.getSelectedEntities();
     selectedEntities.forEach((entity) => {
-      scene.instantResolve(scene.requestEntityDestruction(entity));
+      entity.destroy().resolve()
     });
 
     inspector.selectEntities([]);
@@ -78,7 +78,7 @@ const SceneInspector = () => {
     }
 
     const target = scene.getEntities().find(entity => entity.id === id)!;
-    scene.instantResolve(scene.requestEntityTransformation(target, null));
+    target.setParent(null).resolve();
     editorContext.forceRerender()
   }
 

@@ -165,8 +165,11 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
-  if (mainWindow === null) createWindow();
+app.on('activate', async () => {
+  if (mainWindow === null) {
+    const window = await createWindow();
+    window.loadURL(resolveHtmlPath('index.html'));
+  }
 });
 
 function applyIpcHandlers() {

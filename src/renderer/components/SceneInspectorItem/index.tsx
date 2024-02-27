@@ -99,7 +99,7 @@ const SceneInspectorItem = (props: SceneInspectorItemProps) => {
     }
 
     const target = scene.getEntities().find(entity => entity.id === id)!;
-    scene.instantResolve(scene.requestEntityTransformation(target, entity))
+    target.setParent(entity);
     editorContext.forceRerender()
   }
 

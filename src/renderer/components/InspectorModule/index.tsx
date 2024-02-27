@@ -53,17 +53,21 @@ const InspectorModule: React.FC<InspectorModuleProps> = (props) => {
         <span className='name'>{splitCaseMixedString(props.component.constructor.name ?? props.name ?? 'Untitled').join(' ')}</span>
         {!(props.component instanceof EntityTransform) && (
           <FontAwesomeIcon className='additional-actions' icon={faEllipsisVertical} onClick={async () => {
-            const response = await window.electron.ipcRenderer.openCIEContextMenu();
-            if (!response) {
-              return;
-            }
+            const response = await window.electron.ipcRenderer.openContextMenu([
+              {
+                label: 'Remove',
+                payload: 'remove' as const,
+              }
+            ]);
 
-            if (props.component instanceof EntityTransform) {
-              return;
-            }
+            if (response === 'remove') {
+              if (props.component instanceof EntityTransform) {
+                return;
+              }
 
-            props.component.entity.scene?.instantResolve(props.component.destroy());
-            inspectorContext.forceRerender()
+              props.component.destroy().resolve();
+              inspectorContext.forceRerender()
+            }
           }} /> 
         )}
       </header>
