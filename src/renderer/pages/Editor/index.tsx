@@ -15,6 +15,7 @@ import { faCompassDrafting } from '@fortawesome/free-solid-svg-icons';
 import AppTitleBar from 'renderer/layouts/AppTitleBar';
 import DialogModal from 'renderer/components/DialogModal';
 import { asyncTimeout } from 'renderer/utilities/promises.util';
+import { Engine } from 'crontext-engine';
 
 export interface EditorContextState {
   simulation: Simulation;
@@ -55,6 +56,11 @@ const instantiateSimulationInspectorRenderer = (simulationRenderer: SimulationRe
   // simulationInspectorRenderer.simulation.updateOnFrameChange = false;
   // simulationInspectorRenderer.simulation.updatesPerSecond = 2;
   return simulationInspectorRenderer;
+}
+
+Engine.fileUrlLoader = (path: string) => {
+  const result = window.electron.ipcRenderer.getImageDataUrlFromPath(path);
+  return result;
 }
 
 const Editor: React.FC = () => {
@@ -191,14 +197,13 @@ const Editor: React.FC = () => {
 
     setRecompilationProgress(1);
     setCompilationMessage('Applying');
-
-    await asyncTimeout(1000);
    
     setRecompiling(false);
     if (resultResponse.compiledSuccessfuly) {
       location.reload();
     } else {
       alert(`An error has occured while recompiling renderer: ${resultResponse.error ?? 'Unkown error'}`);
+      console.log(resultResponse.error)
     }
   }
 

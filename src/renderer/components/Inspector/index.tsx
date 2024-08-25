@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { EditorContext } from 'renderer/pages/Editor';
 import InspectorModule from '../InspectorModule';
 import { Component, Engine, Entity } from 'crontext-engine';
@@ -41,6 +41,7 @@ const ComponentRepresenter = (props: { componentConstructor: Constructor<Compone
   )
 }
 
+
 const Inspector: React.FC = () => {
   const editorContext = useContext(EditorContext);
   const rerender = useComponentForceRerender();
@@ -48,6 +49,29 @@ const Inspector: React.FC = () => {
   const { inspector } = editorContext.simulationInspectorRenderer ?? {};
   const inspectorContentRef = useRef<HTMLElement>(null);
   const showcaseRef = useRef<HTMLDivElement>(null);
+
+  const [image, setMedia] = useState<string>();
+  useEffect(() => {
+    (async () => {
+      // const res = await window.electron.ipcRenderer.getImageDataUrlFromPath('/Users/vadym.iefremov/Crontext Editor/Clear Vision Mapper/Screenshot 2024-02-28 at 23.26.15.png')
+
+      // function dataURLtoBlob(dataurl: string) {
+      //   const arr = dataurl.split(',')
+      //   const mime = arr[0].match(/:(.*?);/)![1];
+      //   const bstr = atob(arr[1]);
+      //   let n = bstr.length;
+      //   const u8arr = new Uint8Array(n);
+
+      //   while(n--){
+      //       u8arr[n] = bstr.charCodeAt(n);
+      //   }
+      //   return new Blob([u8arr], {type:mime});
+      // }
+
+      // setMedia(res)
+      // setMedia(res.map(r => [r[0], r[1]]));
+    })();
+  }, []);
 
   const entity = [...inspector.selectedEntities][0];
 
@@ -204,6 +228,9 @@ const Inspector: React.FC = () => {
           </div>
         </div>
       </main>
+      {/* {image && (
+        <img src={image} alt="" />
+      )} */}
     </section>
   )
 }

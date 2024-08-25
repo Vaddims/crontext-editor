@@ -17,5 +17,5 @@
     "noEmitOnError": true,
     "useDefineForClassFields": true,
   },
-  "exclude": ["test", "release/build", "release/app/dist", ".erb/dll"]
+  "exclude": ["release/build", "release/app/dist", ".erb/dll"]
 }

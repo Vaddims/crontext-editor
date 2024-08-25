@@ -1,10 +1,10 @@
 import path from 'path';
-import { app, BrowserWindow, shell, ipcMain, ipcRenderer, systemPreferences } from 'electron';
+import { app, BrowserWindow, shell, ipcMain, ipcRenderer, systemPreferences, protocol } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
 import MenuBuilder from './menu';
 import { resolveHtmlPath } from './util';
-import { IpcEditorRendererCompiler, getAccentColor, openComponentInspectEditorContextMenu, openRendererContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
+import { IpcEditorRendererCompiler, IpcFileLoader, getAccentColor, openComponentInspectEditorContextMenu, openRendererContextMenu, openSimulationInspectorRendererContextMenu, readJson, writeJson } from './ipc-handlers';
 import { EditorRendererCompilation as ERC } from './workers/editor.renderer-compilation.types';
 
 class AppUpdater {
@@ -45,6 +45,10 @@ const installExtensions = async () => {
 const createWindow = async () => {
   // if (isDebug) {
   //   await installExtensions();
+  // }
+
+  // if (!isDev) {
+  //   protocol.registerBufferProtocol(Protocol.scheme, Protocol.requestHandler);
   // }
 
   const RESOURCES_PATH = app.isPackaged
@@ -145,18 +149,25 @@ app.on('web-contents-created', () => {
 
   const shouldPrecompileRenderer = process.env.NODE_ENV_DEV === 'static';
 
-  if (shouldPrecompileRenderer) {
-    const compiledSuccessfuly = await IpcEditorRendererCompiler.compile();
-    if (compiledSuccessfuly) {
-      const window = await createWindow();
-      window.loadURL(resolveHtmlPath('index.html'));
-    } else {
-      console.warn('Renderer compilation error');
-    }
-  } else {
+  console.log('Should precompile renderer:', shouldPrecompileRenderer);
+  if (!shouldPrecompileRenderer) {
+    console.log('Start loading existing renderer');
     const window = await createWindow();
-    window.loadURL(resolveHtmlPath('index.html'));
+    await window.loadURL(resolveHtmlPath('index.html'));
+    console.log('Renderer loaded');
+    return;
   }
+
+  const compilationResult = await IpcEditorRendererCompiler.compile();
+  if (compilationResult.compiledSuccessfuly) {
+    console.log('Compilation successful, loading renderer');
+    const window = await createWindow();
+    await window.loadURL(resolveHtmlPath('index.html'));
+    console.log('Renderer loaded');
+    return;
+  }
+
+  console.warn('Renderer compilation failed', compilationResult.error);
 })();
 
 app.on('window-all-closed', () => {
@@ -219,5 +230,9 @@ function applyIpcHandlers() {
     }
 
     return await openRendererContextMenu(targetWindow, menuOptions)
+  });
+
+  ipcMain.handle('get-image-data-url', async (_, path: string) => {
+    return await IpcFileLoader.getImageDataUrlFromPath(path);
   });
 }

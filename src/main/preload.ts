@@ -39,6 +39,10 @@ const electronHandler = {
       return await ipcRenderer.invoke('compile-renderer') as EditorRendererCompilation.Response;
     },
 
+    async getImageDataUrlFromPath(path: string) {
+      return await ipcRenderer.invoke('get-image-data-url', path) as string | null;
+    },
+
     async compileEditorRederer(handleProgressResponse?: (response: EditorRendererCompilation.Response.Progress) => void) {
       const unsubscribeFromCompilationProgressListener = electronHandler.ipcRenderer.on('compilation-progress', handleProgressResponse);
       const compilationPromise = await ipcRenderer.invoke('compile-renderer') as EditorRendererCompilation.Response.Result;

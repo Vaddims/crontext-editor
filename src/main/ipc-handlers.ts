@@ -1,5 +1,5 @@
 import path from 'path';
-import fs from 'fs/promises';
+import fs, { readFile } from 'fs/promises';
 import { BrowserWindow, Menu, systemPreferences } from 'electron';
 import { createSimulationInspectorMenuTemplate } from './menus/simulation-inspector.menu';
 import { createComponentInspectorEditorMenuTemplate } from './menus/component-inspector-editor.menu';
@@ -12,8 +12,10 @@ import { EditorRendererCompilation as ERC } from './workers/editor.renderer-comp
 
 const homePath = os.homedir()
  // TODO make the editor / project paths dynamic
-const crontextEditor = path.join(os.homedir(), 'Crontext Editor');
-const projectPath = path.join(crontextEditor, 'Tester');
+const crontextEditor = path.join(homePath, 'Crontext Editor');
+
+const TEMP_PROJECT_PATH_NAME = 'Clear Vision Mapper';
+const projectPath = path.join(crontextEditor, TEMP_PROJECT_PATH_NAME);
 
 const ERC_WORKER_FILE_NAME = 'editor-renderer-compilation.worker.ts';
 
@@ -87,16 +89,65 @@ export const getAccentColor = () => {
   return systemPreferences.getAccentColor();
 }
 
-const TEST_PATH_ENTRY = '/Users/vadym.iefremov/Crontext Editor/Tester/loadeter';
+export class IpcFileLoader {
+  public static async getWorkspaceFiles(workspacePath: string, fileExtension?: string[]) {
+    const excludedDirectories = ['node_modules'];
+    const workspaceFilePaths: string[] = [];
+
+    try {
+      const relativeFilePaths = await fs.readdir(workspacePath);
+
+      for (const relativeFilePath of relativeFilePaths) {
+        const fullPath = path.join(workspacePath, relativeFilePath);
+        const stat = await fs.stat(fullPath);
+    
+        if (!stat.isDirectory()) {
+          if (fileExtension && !fileExtension.some(ext => relativeFilePath.endsWith(`.${ext}`))) {
+            continue;
+          }
+
+          workspaceFilePaths.push(fullPath);
+          continue;
+        }
+    
+        if (excludedDirectories.includes(relativeFilePath)) {
+          continue;
+        }
+    
+        const subFiles = await fs.readdir(fullPath);
+        for (const subFile of subFiles) {
+          relativeFilePaths.push(path.join(relativeFilePath, subFile));
+        }
+      }
+    } catch (error) {
+      console.warn('Error while loading workspace files', error);
+    }
+
+    return workspaceFilePaths;
+  }
+
+  public static async getImageDataUrlFromPath(imagePath: string) {
+    try {
+      const file = await readFile(imagePath, 'base64');
+      return `data:image/png;base64,${file}`;
+    } catch {
+      return null;
+    }
+  }
+}
+
+
 export class IpcEditorRendererCompiler {
   public static async *compileWithProgress() {
-    const workspaceEntry = TEST_PATH_ENTRY;
+    const typescriptFilePaths = await IpcFileLoader.getWorkspaceFiles(projectPath, ['ts']);
+    const pureNameTypescriptFilePaths = typescriptFilePaths.map(path => path.replace(/\.ts$/, ''));
+
     const rendererRebuilderWorker = useWorker(path.join(webpackPaths.srcMainPath, 'workers', ERC_WORKER_FILE_NAME));
     
     const editorRendererCompilationRequest: ERC.Request.Compile = {
       type: ERC.Request.Type.Compile,
       entries: [
-        workspaceEntry,
+        ...pureNameTypescriptFilePaths,
       ],
     }
 
